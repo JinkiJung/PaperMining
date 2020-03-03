@@ -1,0 +1,121 @@
+{
+  "title": "Paper Mining",
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "properties": {
+    "projectName": {
+      "title": "Project name",
+      "type": "string",
+      "options": {
+        "inputAttributes": {
+          "placeholder": "Enter project name"
+        }
+      }
+    },
+    "papers": {
+      "title": "papers",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/paper"
+      }
+    },
+    "thoughts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/thought"
+      }
+    }
+  },
+  "definitions": {
+    "contributor": {
+      "title": "Contributor",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "comment": {
+      "title": "Comment",
+      "type": "object",
+      "properties": {
+        "sentence": {
+          "type": "string"
+        },
+        "writer": {
+          "$ref": "#/definitions/contributor"
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      }
+    },
+    "thought": {
+      "title": "Thought",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "section": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "quote": {
+          "type": "string"
+        },
+        "comment": {
+          "$ref": "#/definitions/comment"
+        },
+        "discussion": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/comment"
+          }
+        },
+        "rating": {
+          "type": "integer"
+        },
+        "order": {
+          "type": "integer"
+        },
+        "mined": {
+          "type": "boolean"
+        },
+        "written": {
+          "type": "boolean"
+        },
+        "paperID": {
+          "type": "string"
+        }
+      }
+    },
+    "paper": {
+      "title": "Paper",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "bib": {
+          "type": "string"
+        },
+        "pdf": {
+          "type": "string"
+        },
+        "miners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/contributor"
+          }
+        }
+      }
+    }
+  }
+}
