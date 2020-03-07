@@ -1,0 +1,329 @@
+/* Demo purposes */
+
+body {
+    font-family: "Raleway", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+    line-height: 1.5;
+}
+
+th, td {
+    text-align: left;
+    padding: 16px;
+}
+
+tr:nth-child(odd) {
+    background-color: #fafafa
+}
+
+table {
+    border-spacing: 0;
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px #777 solid;
+    font: 12px sans-serif;
+    font-family: "Quicksand", sans-serif;
+}
+
+table.table_header{
+    vertical-align: middle;
+}
+
+.unselectable{
+    user-select: none;
+}
+
+td {
+    border: 0.5px #aaa solid;
+    padding: 5px;
+}
+/* Tooltip container */
+.tip {
+    font: 13px sans-serif;
+    font-weight: bold;
+    color: #318090;
+    font-family: "Quicksand", sans-serif;
+    position: relative;
+    background-color: transparent;
+    border: 0px; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tip .description {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tip:hover .description {
+    visibility: visible;
+}
+
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.go:focus{
+    background-color:#19A3FF;
+}
+
+#searching{
+    font: 30px, 'PT Sans', serif;
+    background-color: blue;
+    text-align: center;
+}
+
+#paperName{
+    font-size: 25px;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+}
+
+ul:after{
+    display:block;
+    clear:both;
+    content:"";
+}
+
+#keyword{
+    font-size:23px;
+}
+#ref{
+    font-size: 30px;
+}
+
+#table{
+    font-size:30px;
+}
+#table > ul > li{
+    width:49%;
+    margin:0;
+    display:flex;
+    display:-webkit-flex;
+    float:left;
+}
+
+#table > ul .tags {
+    margin: 30px 0 0 0;
+    width:47%;
+    list-style: none;
+    height:inherit;
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+ul{
+    padding:0 0 0px 0;
+    display:inline;
+    display:-webkit-flex;
+    flex-wrap:wrap;
+    -webkit-flex-wrap:wrap;
+    list-style:none;
+}
+ul li{
+    padding: 0px 0px 0px 0px;
+    width:45%;
+    margin:0;
+    display:-webkit-flex;
+    float:left;
+}
+
+.tags {
+    margin: 0px 0 0 0;
+    display: inline-block;
+    list-style: none;
+    overflow: hidden;
+
+}
+
+.tags li {
+    float: left;
+
+}
+
+input.tag_test {
+    font-family: "Raleway", sans-serif;
+    background: rgb(67, 138, 219);
+    color: white;
+    font-size: 13px;
+}
+
+.tag {
+    font: 15px sans-serif;
+    font-family: "Abel";
+    background: #419080;
+    display: inline-block;
+    border-radius: 2px 0 0 2px;
+    color: #fff;
+    display: inline-block;
+    height: 26px;
+    font-weight: lighter;
+    line-height: 0px;
+    padding: 0 3px 0 3px;
+    position: relative;
+    margin: 0 0px 0px 0;
+    text-decoration: none;
+    -webkit-transition: color 0.2s;
+}
+
+.tag:hover {
+    background-color: rgb(13, 81, 145);
+    color: white;
+}
+
+.tag:hover::after {
+
+    border-left-color: rgb(13, 81, 145);
+}
+
+.collapsible {
+    font-family: "Abel", sans-serif;
+    font-size: 25px;
+    background-color: white;
+    color: #4d4d4d;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+}
+
+.active, .collapsible:hover {
+    background-color: white;
+    color: #0066ff;
+//border: 1px solid #0066ff;
+}
+
+.collapsible:after {
+    content: '\002B';
+    color: #0066ff;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.alignleft {
+    float: left;
+}
+.alignright {
+    float: right;
+}
+
+div.alignright {
+    font-family: "Staatliches", sans-serif;
+    font-size: 30px;
+}
+
+.active:after {
+    content: "\2212";
+}
+
+.content {
+    font-family: "Raleway", sans-serif;
+    font-size: 13px;
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #f2f2f2;
+}
+p {
+    font-family: "Abel", sans-serif;
+    font-size: 23px;
+}
+p.tags {
+    text-align: right;
+}
+p.detail {
+    font-family: "Raleway", sans-serif;
+    font-size: 23px;
+    color: #4d4d4d;
+}
+tbody .myDragClass{
+    color: white;
+    text-shadow: 1px 1px rgb(37, 37, 37);
+    background-color: rgb(29, 70, 117);
+    box-shadow: 3px -3px 3px rgb(138, 138, 138);
+}
+
+input[type=button] {
+    font-family: "Staatliches", sans-serif;
+    color: white;
+    font-size: 20px;
+    padding:0px; border:1px;
+    border-color: black;
+    -o-transition:color .02s ease-out, background .02s ease-in;
+    -ms-transition:color .02s ease-out, background .02s ease-in;
+    -moz-transition:color .02s ease-out, background .02s ease-in;
+    -webkit-transition:color .02s ease-out, background .02s ease-in;
+    /* ...and now override with proper CSS property */
+    transition:color .3s ease-out, background .3s ease-in;
+}
+
+.home_button{
+    width:10%;
+    background: #34675c;
+}
+
+.home_button:hover{
+    width:10%;
+    background: black;
+}
+
+.top_button {
+    width:30%;
+    background: #34675c;
+}
+
+.top_button:hover {
+    background: #363237;
+}

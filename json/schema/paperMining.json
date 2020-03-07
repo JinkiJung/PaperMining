@@ -1,7 +1,7 @@
 {
   "title": "Paper Mining",
   "type": "object",
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema",
   "properties": {
     "projectName": {
       "title": "Project name",
@@ -27,12 +27,15 @@
     }
   },
   "definitions": {
-    "contributor": {
-      "title": "Contributor",
+    "section": {
+      "title": "Section",
       "type": "object",
       "properties": {
-        "id": {
+        "name": {
           "type": "string"
+        },
+        "priority": {
+          "type": "integer"
         }
       }
     },
@@ -40,11 +43,11 @@
       "title": "Comment",
       "type": "object",
       "properties": {
-        "sentence": {
+        "content": {
           "type": "string"
         },
-        "writer": {
-          "$ref": "#/definitions/contributor"
+        "commenter": {
+          "type": "string"
         },
         "timestamp": {
           "type": "string"
@@ -54,65 +57,305 @@
     "thought": {
       "title": "Thought",
       "type": "object",
+      "required":["id"],
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
+          }
         },
         "section": {
-          "type": "string"
+          "$ref": "#/definitions/section",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve", "plant"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          }
         },
         "tag": {
-          "type": "string"
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          }
         },
-        "quote": {
-          "type": "string"
+        "quotation": {
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          }
         },
         "comment": {
-          "$ref": "#/definitions/comment"
+          "$ref": "#/definitions/comment",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve", "plant"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          }
         },
         "discussion": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/comment"
+          },
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
           }
         },
         "rating": {
-          "type": "integer"
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          }
         },
         "order": {
-          "type": "integer"
+          "type": "integer",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          }
         },
-        "mined": {
-          "type": "boolean"
+        "toPlant": {
+          "type": "boolean",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine", "carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["carve"]
+          }
         },
         "written": {
-          "type": "boolean"
+          "type": "boolean",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["plant"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["plant"]
+          }
         },
         "paperID": {
-          "type": "string"
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
+          }
         }
       }
     },
     "paper": {
       "title": "Paper",
       "type": "object",
+      "required": [
+        "id", "title"
+      ],
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
+          }
         },
         "title": {
-          "type": "string"
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          }
         },
-        "bib": {
-          "type": "string"
+        "bibtex": {
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
+          }
         },
         "pdf": {
-          "type": "string"
-        },
-        "miners": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/contributor"
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
           }
         }
       }
