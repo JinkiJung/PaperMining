@@ -1,11 +1,11 @@
 function getTitle(jsonData, paperID){
     if(paperID !== 'null')
-        return "[Paper Mining]<br>"+getTitleFromPaperID(jsonData["papers"], paperID);
+        return "[Mining]<br>"+getTitleFromPaperID(jsonData["papers"], paperID);
     else
         return jsonData["projectName"]
 }
 
-function generateTable(context, projectName, jsonData, jsonSchema){
+function generateTable(context, projectName, jsonData, jsonSchema, paperID){
     var result = "";
     var trStyle = "";
     /*
@@ -13,17 +13,13 @@ function generateTable(context, projectName, jsonData, jsonSchema){
         trStyle = "class=\"nodrop nodrag\"";
      */
     result += "<table id=\"sortableTable\"><tr "+trStyle+">";
-
     var headers = [];
-    if(context === 'collect')
-        headers = getKeysByContext(context, jsonSchema["paper"]["properties"]);
-    else
-        headers = getKeysByContext(context, jsonSchema["thought"]["properties"]);
+    headers = getKeysByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
 
     // header
-    result += generateTableHeader(headers);
+    result += generateTableHeader(headers, paperID);
     // new entry
-    generateDataEnterForm(headers);
+    generateDataEnterForm(context, headers);
 
     result += generateTableBody(jsonData, headers);
     // existing data
@@ -73,15 +69,31 @@ function generateContent(obj, key){
         else
             return "error";
     }
-    else
+    else if(obj)
         return obj;
+    else if(obj === 0)
+        return "0";
+    else
+        return "";
 }
 
 function generateForm(obj, key){
     var htmlElement = "p";
     var rowId = generateRowID(obj, key);
     var rowContent = generateContent(obj, key);
-    if(typeof obj === "boolean")
+    if(obj === undefined && key){ // for new entry
+        // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if(key === 'rating' || key === 'order')
+            return "<td><input type=\"number\" class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</input></td>";
+        else if(key === 'toPlant')
+            return "<td><input type=\"checkbox\" class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</input></td>";
+        else if(key === 'pdf')
+            return "<td>" + createPDFUploadPopup(rowId) + "</td>";
+        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        else
+            return "<td><textarea class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
+    }
+    else if(typeof obj === "boolean")
         return "<td><input type='checkbox' id=\"" + rowId + "\" value = " + rowContent + "></input></td>";
     else if(key==="id" || key ==='paperID')
         return "<td><a href='table.html?context=mine&paperID="+obj+"'>"+ rowContent + "</a></td>";
@@ -94,6 +106,23 @@ function generateForm(obj, key){
         //return "<td><p id='"+rowId+"'>"+rowContent+"</p></td>";
 }
 
+function contextToData(context){
+    return contextToDefinition(context) + 's';
+}
+
+function contextToDefinition(context){
+    if(context === 'collect')
+        return 'paper';
+    else if(context === 'mine')
+        return 'thought';
+    else if(context === 'carve')
+        return 'thought';
+    else if(context === 'plant')
+        return 'thought';
+    else
+        return "";
+}
+
 function generateDeleteButton(){
     return "<td><button onclick=\"setClipboard('GG')\">Delete</button></td>";
 }
@@ -101,6 +130,8 @@ function generateDeleteButton(){
 function generateRowID(obj, key){
     if(obj)
         return obj + "_" + key;
+    else
+        return "new"+"_"+key;
 }
 
 function generateRow(jsonDatum, key) {

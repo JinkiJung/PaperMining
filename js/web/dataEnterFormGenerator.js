@@ -1,10 +1,14 @@
-function generateDataEnterForm(headers){
-    document.getElementById("dataEnterForm").innerHTML = generateNewEntry(headers);
+function generateDataEnterForm(context, headers){
+    if(context === 'carve' || context === 'plant')
+        return ;
+    document.getElementById("dataEnterForm").innerHTML = generateNewEntry(context, headers);
     var modal = document.getElementById('myModal');
     // Get the button that opens the modal
     var btn = document.getElementById("newEntryBtn");
     // Get the <span> element that closes the modal
     var span = document.getElementsByClassName("close")[0];
+
+    initializeInputFields(context);
 
     // When the user clicks the button, open the modal
     btn.onclick = function() {
@@ -24,12 +28,24 @@ function generateDataEnterForm(headers){
     };
 }
 
-function generateNewEntry(header){
+function initializeInputFields(context){
+    // give random paperID
+    document.getElementById("new_id").value = contextToDefinition(context)+ '_' + Math.random().toString(36).substr(2, 7);;
+
+    if(document.getElementById("new_rating"))
+        document.getElementById("new_rating").value = 0;
+
+    // set contributor's name from local
+    if(document.getElementById("new_contributor") && hasLocalUserName())
+        document.getElementById("new_contributor").value = getValueFromLS();
+}
+
+function generateNewEntry(context, header){
     var result = "<button id=\"newEntryBtn\" >Add new</button>";
     result += "<div id=\"myModal\" class=\"modal\">";
     result += "<div class=\"modal-content\">";
     result += "<span class=\"close\">&times;</span>";
-    result += generateNewEntryCore(header);
+    result += generateNewEntryCore(context, header);
     result += "</div></div>";
     return result;
 }
@@ -51,75 +67,161 @@ function drawConfirmCircle(color) {
     context.fill();
 }
 
-function createPopup(){
-    return "<a href=\"#\" onClick=\"passTitle(); return false;\">Upload</a><noscript>You need Javascript to use the previous link or use <a href=\"index.html\" target=\"_blank\">Upload</a></noscript>";
+function createPDFUploadPopup(rowId){
+    return "<a href=\"#\" onClick=\"passTitle(); return false;\">Upload</a><noscript>You need Javascript to use the previous link or use <a href=\"index.html\" target=\"_blank\">Upload</a></noscript><textarea readonly class='new_input_field' id=\"" + rowId + "\" ></textarea>";
 }
 
-function generateNewEntryCore(header){
-    //var result += "<p>Some text in the Modal..</p>";
-    // for new entry
+function generateNewEntryCore(context, header){
     var result = "<table>";
     //*
-    for(var k=0; k<header.length; k++){
-        if(header[k]=='timestamp')
-            continue;
-
+    for(var k=0; k<header.length-1; k++){
         result +="<tr>";
         var textValue="";
-        if(k==19)
-            textValue = getValueFromLS();
 
         result += "<td class=table_title width=10><b>"+capitalizeFirstLetter(header[k])+"</b></td>";
-        if(k==8)
-            result +="<td><textarea onBlur=\"checkEntry("+"'new_paper_"+header[k]+"');\" style=\"display:none;\" id=\"new_paper_"+header[k]+"\" cols=\"20\"></textarea></td>";
-        else if(k==10)
-            result +="<td>"+createPopup()+"</td>";
-        else
-            result +="<td>"+createTextArea(header[k], textValue)+"</td>";
-        //result +="<td><textarea onBlur=\"checkEntry("+"'new_paper_"+header[k]+"');\" style=\"border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;\" id=\"new_paper_"+header[k]+"\" cols=\"20\">"+textValue+"</textarea></td>";
-
-        if(textValue.length==0 || textValue=="[enter new user name]")
-            result += "<td width=2><img src=\"../asset/undefined.png\" id=\"new_paper_"+header[k]+"_img\" width=10 height=10 ></td>";
-        else {
-            result += "<td width=2><img src=\"../asset/confirm.png\" id=\"new_paper_"+header[k]+"_img\" width=10 height=10 ></td>";
-        }
-        /*
-        if(k==1){
-          result +="</tr><tr><td colspan=3>"+createBibButtons()+"</td></tr>";
-          result +="</tr><tr><td><b>Bibtex</b></td><td>"+createTextArea("bib", textValue)+"</td>";
-          result += "<td width=2><img src=\"asset/undefined.png\" id=\"new_paper_bibtex_img\" width=10 height=10 ></td>";
-        }
-        */
+        result += generateForm(undefined, header[k]);//"<td>"+createTextArea(header[k], textValue)+"</td>";
         result +="</tr>";
     }
-    //result += "<tr><td colspan=3><button id=\"submit_\" onclick=\"passNewEntryParameter('paper', undefined, '"+projectName+"')\">Submit</button> <button onclick=\"clearNewEntry()\">Clear</button></td></tr>";
-    result += "<tr><td colspan=3><button id=\"submit_\" >Submit</button> <button >Clear</button></td></tr>";
+    var paperID = getURLParameter("paperID");
+    if(paperID)
+        result += "<tr><td colspan=2><button id=\"submit_\" onclick='addNewData(\""+String(context)+"\", \""+String(paperID)+"\")'>Submit</button> ";
+    else
+        result += "<tr><td colspan=2><button id=\"submit_\" onclick='addNewData(\""+String(context)+"\")'>Submit</button> ";
+    result += "<button onclick='clearInputField()'>Clear</button></td></tr>";
     result += "</table>";
     return result;
 }
 
-function createTextArea(type, textValue){
-    if(type == 'bibtex')
-        return "<textarea onBlur=\"checkBibTexEntry('new_paper_"+type+"');\" style=\"border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;\" id=\"new_paper_"+type+"\" cols=\"20\">"+textValue+"</textarea>";
+function addNewData(context, paperID){
+    var jsonDatum = collectDatum(context, paperID);
+    if(jsonDatum)
+        registerValidDatum(context, jsonDatum);
+}
+
+function hasLocalUserName(){
+    var userName = getValueFromLS();
+    if(userName && userName.length > 0)
+        return true;
     else
-        return "<textarea onBlur=\"checkEntry('new_paper_"+type+"');\" style=\"border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;\" id=\"new_paper_"+type+"\" cols=\"20\">"+textValue+"</textarea>";
+        return false;
+}
+
+function collectDatum(context, paperID) {
+    if(!hasLocalUserName())
+    {
+        alert("The contributor's name is empty. Move to Home page and enter your name.");
+        return undefined;
+    }
+    var newJsonDatum = {};
+    var fieldNames = document.getElementsByClassName('new_input_field');
+    for(var i=0; i<fieldNames.length ; i++){
+        //if(fieldNames[i].value){
+            var attributeName = fieldNames[i].id.substring(4);
+            if(attributeName === 'comment')
+                newJsonDatum[attributeName] = {"content":fieldNames[i].value, "commenter":getValueFromLS(), "timestamp":"time"};
+            // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            else if(attributeName === 'rating')
+                newJsonDatum[attributeName] = parseFloat(fieldNames[i].value);
+            else if(attributeName === 'toPlant')
+                newJsonDatum[attributeName] = fieldNames[i].value === 'true' ? true: false;
+            // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            else
+                newJsonDatum[attributeName] = fieldNames[i].value;
+        //}
+    }
+    // add order attribute
+    newJsonDatum['order'] = -1;
+    newJsonDatum['written'] = false;
+    if(context === 'mine'){
+        if(paperID)
+            newJsonDatum['paperID'] = paperID;
+        if(newJsonDatum['rating'] === "")
+            newJsonDatum['rating'] = 0;
+        if(newJsonDatum['toPlant'] === "")
+            newJsonDatum['toPlant'] = false;
+    }
+    return newJsonDatum;
+}
+
+function validateDatum(context, schema, data) {
+    var ajv = new Ajv;
+    var valid = ajv.validate(schema, data);
+    if (!valid) alert(getAjvErrorMessages(ajv.errors));
+    else
+        registerDatum(context, data);
+}
+
+function registerDatum(context, jsonDatum){
+    $.ajax({
+        type: "GET",
+        url: "../resources/json/data.json",
+        dataType: "text",
+        success: function (data) {
+            var jsonData = JSON.parse(data);
+            sendJsonDatum(context, jsonDatum);
+        },
+        fail: function (data) {
+            alert("Error in loading json schema.");
+        }
+    });
+}
+
+function sendJsonDatum(context, data){
+    // construct an HTTP request
+    var xhr = new XMLHttpRequest();
+    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/"+contextToDefinition(context);
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    // send the collected data as JSON
+    xhr.send(JSON.stringify(data));
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            //console.log(xhr.responseText);
+            location.reload();
+        }
+    };
+}
+
+function getAjvErrorMessages(errors){
+    var message = "";
+    for(var i=0; i<errors.length ; i++){
+        message += "Given input " + errors[i].message;
+        if(i!==errors.length-1)
+            message += "\n";
+    }
+    return message;
+}
+
+function registerValidDatum(context, jsonDatum){
+    $.ajax({
+        type: "GET",
+        url: "../json/schema/paperMining.json",
+        dataType: "text",
+        success: function (data) {
+            var schemaData = JSON.parse(data);
+            validateDatum(context, schemaData["definitions"][contextToDefinition(context)], jsonDatum);
+        },
+        fail: function (data) {
+            alert("Error in loading json schema.");
+        }
+    });
+}
+
+function createTextArea(type, textValue){
+    return "<textarea onBlur=\"checkEntry('new_paper_"+type+"');\" style=\"border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;\" id=\"new_paper_"+type+"\" cols=\"20\">"+textValue+"</textarea>";
 }
 
 function createBibButtons(){
     return "<button onclick=\"passNewEntryParameter('title2bibtex','title='+getTextareaContent('new_paper_title'));\">Get bib</button><span id = \"status\"></span>";
 }
 
-function clearNewEntry(){
-    console.log(header);
-    if(header!=undefined){
-        for(var k=1; k<header.length; k++){
-            if(header[k]=='timestamp' || header[k]=='pdf' || header[k]=='contributor')
-                continue;
-            $("#new_paper_"+header[k]).val("");
-            checkEntry("new_paper_"+header[k]);
+function clearInputField(){
+    var fieldNames = document.getElementsByClassName('new_input_field');
+    for(var i=0; i<fieldNames.length ; i++) {
+        if (fieldNames[i].value) {
+            fieldNames[i].value = "";
         }
-        $("#new_paper_bibtex").val("");
-        checkEntry("new_paper_bibtex");
     }
 }
 
@@ -129,6 +231,7 @@ function checkBibTexEntry(entered){
 }
 
 function checkEntry(entered){
+
     if($("#"+entered).val().length>0 || $("#"+entered).val()=="[enter new user name]"){
         document.getElementById(entered+"_img").src = "../asset/confirm.png";
     }
@@ -137,14 +240,21 @@ function checkEntry(entered){
     }
 }
 
+
 function getTitleFromTextArea(){
-    return $("#new_paper_title").val();
+    return $("#new_title").val();
+}
+
+function setPDFFilePath(text){
+    document.getElementById("new_pdf").value = text;
 }
 
 function passTitle(){
     var title = getTitleFromTextArea();
-    if(title=="")
-        alert("Please enter the paper title before uploading it.");
+    if(title && title.length > 0){
+        window.open('http://'+defaultConfig.web.url+':'+defaultConfig.web.port+'/pdfupload?title='+title,'pagename','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable,height=260,width=370');
+        //return true;
+    }
     else
-        window.open('http://localhost:4000/pdfupload?title='+title,'pagename','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable,height=260,width=370'); return true;
+        alert("Please enter the paper title before uploading it.");
 }

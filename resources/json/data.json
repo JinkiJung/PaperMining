@@ -1,0 +1,78 @@
+{
+  "projectName": "Paper Mining: collaborative survey tool",
+  "sections": [
+    {
+      "name": "introduction",
+      "number": "1",
+      "order": 1
+    },
+    {
+      "name": "method",
+      "number": "2",
+      "order": 2
+    }
+  ],
+  "papers": [
+    {
+      "id": "paper001",
+      "title": "Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality",
+      "bibtex": "@inproceedings{lee2019annotation, title={Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality}, author={Lee, Hyeopwoo and Kim, Hyejin and Monteiro, Diego Vilela and Goh, Youngnoh and Han, Daseong and Liang, Hai-Ning and Yang, Hyun Seung and Jung, Jinki}, booktitle={2019 IEEE International Symposium on Mixed and Augmented Reality (ISMAR)}, pages={318--327}, year={2019}, organization={IEEE} }",
+      "pdf": "./resources/pdf/test001.pdf",
+      "contributor": "Jinki Jung"
+    },
+    {
+      "id": "paper002",
+      "title": "Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality",
+      "bibtex": "@inproceedings{lee2019annotation, title={Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality}, author={Lee, Hyeopwoo and Kim, Hyejin and Monteiro, Diego Vilela and Goh, Youngnoh and Han, Daseong and Liang, Hai-Ning and Yang, Hyun Seung and Jung, Jinki}, booktitle={2019 IEEE International Symposium on Mixed and Augmented Reality (ISMAR)}, pages={318--327}, year={2019}, organization={IEEE} }",
+      "pdf": "./resources/pdf/test001.pdf",
+      "contributor": "Jinki Jung"
+    }
+  ],
+  "thoughts": [
+    {
+      "id": "thought001",
+      "section": "introduction",
+      "tag": "Nah",
+      "quotation": "erer",
+      "comment": {
+        "content": "what?",
+        "commenter": "Jinki Jung"
+      },
+      "rating": 3,
+      "order": 1,
+      "toPlant": true,
+      "written": false,
+      "paperID": "paper001"
+    },
+    {
+      "id": "thought002",
+      "section": "introduction",
+      "tag": "Nah",
+      "quotation": "erer",
+      "comment": {
+        "content": "what?",
+        "commenter": "Jinki Jung"
+      },
+      "rating": 3,
+      "order": 1,
+      "toPlant": true,
+      "written": false,
+      "paperID": "paper002"
+    },
+    {
+      "id": "thought003",
+      "section": "method",
+      "tag": "Nah",
+      "quotation": "erer",
+      "comment": {
+        "content": "what?",
+        "commenter": "Jinki Jung"
+      },
+      "rating": 3,
+      "order": 1,
+      "toPlant": true,
+      "written": false,
+      "paperID": "paper001"
+    }
+  ]
+}

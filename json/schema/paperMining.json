@@ -2,6 +2,7 @@
   "title": "Paper Mining",
   "type": "object",
   "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/JinkiJung/PaperMining/blob/master/json/schema/paperMining.json",
   "properties": {
     "projectName": {
       "title": "Project name",
@@ -12,14 +13,22 @@
         }
       }
     },
+    "sections": {
+      "title": "Section list",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/section"
+      }
+    },
     "papers": {
-      "title": "papers",
+      "title": "Paper list",
       "type": "array",
       "items": {
         "$ref": "#/definitions/paper"
       }
     },
     "thoughts": {
+      "title": "Thought list",
       "type": "array",
       "items": {
         "$ref": "#/definitions/thought"
@@ -34,7 +43,10 @@
         "name": {
           "type": "string"
         },
-        "priority": {
+        "number": {
+          "type": "string"
+        },
+        "order": {
           "type": "integer"
         }
       }
@@ -67,7 +79,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["mine"]
           },
           "_editable": {
             "type": "array",
@@ -75,11 +87,11 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["mine"]
           }
         },
         "section": {
-          "$ref": "#/definitions/section",
+          "type": "string",
           "_visible": {
             "type": "array",
             "items":{
@@ -136,7 +148,18 @@
           }
         },
         "comment": {
-          "$ref": "#/definitions/comment",
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "commenter": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string"
+            }
+          },
           "_visible": {
             "type": "array",
             "items":{
@@ -144,28 +167,6 @@
               "enum": ["collect", "mine", "carve", "plant"]
             },
             "default": ["mine", "carve", "plant"]
-          },
-          "_editable": {
-            "type": "array",
-            "items":{
-              "type": "string",
-              "enum": ["collect", "mine", "carve", "plant"]
-            },
-            "default": ["mine", "carve"]
-          }
-        },
-        "discussion": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/comment"
-          },
-          "_visible": {
-            "type": "array",
-            "items":{
-              "type": "string",
-              "enum": ["collect", "mine", "carve", "plant"]
-            },
-            "default": ["carve"]
           },
           "_editable": {
             "type": "array",
@@ -205,7 +206,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["mine", "carve"]
+            "default": ["carve"]
           },
           "_editable": {
             "type": "array",
@@ -213,7 +214,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["mine", "carve"]
+            "default": ["carve"]
           }
         },
         "toPlant": {
@@ -340,6 +341,25 @@
           }
         },
         "pdf": {
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
+          }
+        },
+        "contributor": {
           "type": "string",
           "_visible": {
             "type": "array",

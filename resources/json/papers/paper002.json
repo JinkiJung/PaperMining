@@ -1,0 +1,7 @@
+{
+  "id":"paper002",
+  "title":"Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality",
+  "bibtex":"@inproceedings{lee2019annotation, title={Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality}, author={Lee, Hyeopwoo and Kim, Hyejin and Monteiro, Diego Vilela and Goh, Youngnoh and Han, Daseong and Liang, Hai-Ning and Yang, Hyun Seung and Jung, Jinki}, booktitle={2019 IEEE International Symposium on Mixed and Augmented Reality (ISMAR)}, pages={318--327}, year={2019}, organization={IEEE} }",
+  "pdf":"./resources/pdf/test001.pdf",
+  "contributors":["Jinki Jung"]
+}

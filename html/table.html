@@ -12,10 +12,13 @@
 <section id="title"></section>
 <section id="dataEnterForm"></section>
 <section id="dataTable"></section>
+
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.12.0/ajv.min.js"></script>
 <script src="../js/web/PMHeader.js"></script>
 <script src="../js/web/tableGenerator.js"></script>
+<script src="../js/util/localStorage4User.js"></script>
 <script src="../js/web/dataEnterFormGenerator.js"></script>
 <script src="../js/web/sortableTableGenerator.js"></script>
 <!--
@@ -30,6 +33,8 @@
 <script src="js/jquery.tablednd.js"></script>
 -->
 <script>
+    var defaultConfig = { web: {url: "localhost", port:"5000"}};
+
     function setClipboard(value) {
         var tempInput = document.createElement("input");
         tempInput.style = "position: absolute; left: -1000px; top: -1000px";

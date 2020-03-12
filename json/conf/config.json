@@ -1,0 +1,11 @@
+{
+  "development": {
+    "id": "paper_mining_test_by_local_host",
+    "name": "localhost",
+    "web":
+    {
+      "url": "localhost",
+      "port": 5000
+    }
+  }
+}
