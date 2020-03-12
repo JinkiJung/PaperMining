@@ -13,15 +13,14 @@ function generateTable(context, projectName, jsonData, jsonSchema, paperID){
         trStyle = "class=\"nodrop nodrag\"";
      */
     result += "<table id=\"sortableTable\"><tr "+trStyle+">";
-    var headers = [];
-    headers = getKeysByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
-
+    var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
+    var editables = getEditablesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
     // header
     result += generateTableHeader(headers, paperID);
     // new entry
     generateDataEnterForm(context, headers);
 
-    result += generateTableBody(jsonData, headers);
+    result += generateTableBody(jsonData, headers, editables);
     // existing data
     //result += generateDataRows(type,projectName, data, headers);
     return result + "</table>";
@@ -77,14 +76,15 @@ function generateContent(obj, key){
         return "";
 }
 
-function generateForm(obj, key){
+function generateForm(obj, key, editable = true){
     var htmlElement = "p";
     var rowId = generateRowID(obj, key);
     var rowContent = generateContent(obj, key);
     if(obj === undefined && key){ // for new entry
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if(key === 'rating' || key === 'order')
+        if(key === 'rating' || key === 'order'){
             return "<td><input type=\"number\" class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</input></td>";
+        }
         else if(key === 'toPlant')
             return "<td><input type=\"checkbox\" class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</input></td>";
         else if(key === 'pdf')
@@ -93,17 +93,36 @@ function generateForm(obj, key){
         else
             return "<td><textarea class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
     }
-    else if(typeof obj === "boolean")
-        return "<td><input type='checkbox' id=\"" + rowId + "\" value = " + rowContent + "></input></td>";
-    else if(key==="id" || key ==='paperID')
-        return "<td><a href='table.html?context=mine&paperID="+obj+"'>"+ rowContent + "</a></td>";
-    else if(key==="bibtex")
-        return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
-    else if(key==="pdf")
-        return "<td><a href='../resources/pdf/'"+rowContent+"'>Open</a></td>";
-    else
-        return "<td><textarea id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
-        //return "<td><p id='"+rowId+"'>"+rowContent+"</p></td>";
+    else if(typeof obj === "boolean"){
+        if(editable)
+            return "<td><input type='checkbox' id=\"" + rowId + "\" value = " + rowContent + "></input></td>";
+        else
+            return "<td><p id=\"" + rowId + "\">"+rowContent+"</p></td>";
+    }
+    else if(key==="id" || key ==='paperID'){
+        if(editable)
+            return "<td><a href='table.html?context=mine&paperID="+obj+"'>"+ rowContent + "</a></td>";
+        else
+            return "<td><p id=\"" + rowId + "\">"+rowContent+"</p></td>";
+    }
+    else if(key==="bibtex"){
+        if(editable)
+            return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button><br><textarea id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
+        else
+            return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
+    }
+    else if(key==="pdf"){
+        if(editable)
+            return "<td><a href='../"+rowContent+"'>Open</a><br><textarea id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
+        else
+            return "<td><a href='../"+rowContent+"'>Open</a></td>";
+    }
+    else{
+        if(editable)
+            return "<td><textarea id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
+        else
+            return "<td><p id=\"" + rowId + "\">"+rowContent+"</p></td>";
+    }
 }
 
 function contextToData(context){
@@ -134,20 +153,20 @@ function generateRowID(obj, key){
         return "new"+"_"+key;
 }
 
-function generateRow(jsonDatum, key) {
+function generateRow(jsonDatum, key, editables) {
     if(key === 'delete')
         return generateDeleteButton();
     if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
         return "";
-    return generateForm(jsonDatum[key], key);
+    return generateForm(jsonDatum[key], key, editables.includes(key));
 }
 
-function generateTableBody(jsonData, keys){
+function generateTableBody(jsonData, keys, editables){
     var result = "";
     for(var t=0; t < jsonData.length; t++) {
         result += "<tr class=\"new_entry\">";
         for (var k = 0; k < keys.length; k++) {
-            result += generateRow(jsonData[t], keys[k]);
+            result += generateRow(jsonData[t], keys[k], editables);
         }
         result += "</tr>";
     }
@@ -337,14 +356,38 @@ function getAllKeys(jsonData){
     return keys;
 }
 
-function getKeysByContext(context, jsonData){
+function isEditable(context, jsonDatum){
+    for(var t in jsonDatum) {
+        if(t === '_editable'&& jsonDatum[t]["default"].includes(context)){
+            return true;
+        }
+    }
+    return false;
+}
+
+function isVisible(context, jsonDatum){
+    for(var t in jsonDatum) {
+        if(t === '_visible' && jsonDatum[t]["default"].includes(context)){
+            return true;
+        }
+    }
+    return false;
+}
+
+function getEditablesByContext(context, jsonData){
     var keys = [];
     for(var k in jsonData) {
-        for(var t in jsonData[k]) {
-            if(t === '_visible' && jsonData[k][t]["default"].includes(context)){
-                keys.push(k);
-            }
-        }
+        if(isEditable(context, jsonData[k]))
+            keys.push(k);
+    }
+    return keys;
+}
+
+function getVisiblesByContext(context, jsonData){
+    var keys = [];
+    for(var k in jsonData) {
+        if(isVisible(context, jsonData[k]))
+            keys.push(k);
     }
     keys.push('delete');
     return keys;

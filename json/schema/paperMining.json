@@ -87,7 +87,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["mine"]
+            "default": []
           }
         },
         "section": {
@@ -233,7 +233,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["carve"]
+            "default": ["mine","carve"]
           }
         },
         "written": {
@@ -299,7 +299,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["collect"]
           }
         },
         "title": {
@@ -337,7 +337,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["collect"]
           }
         },
         "pdf": {
@@ -356,7 +356,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["collect"]
           }
         },
         "contributor": {
@@ -375,7 +375,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["collect"]
           }
         }
       }

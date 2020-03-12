@@ -79,7 +79,7 @@ function generateNewEntryCore(context, header){
         var textValue="";
 
         result += "<td class=table_title width=10><b>"+capitalizeFirstLetter(header[k])+"</b></td>";
-        result += generateForm(undefined, header[k]);//"<td>"+createTextArea(header[k], textValue)+"</td>";
+        result += generateForm(undefined, header[k]);
         result +="</tr>";
     }
     var paperID = getURLParameter("paperID");
