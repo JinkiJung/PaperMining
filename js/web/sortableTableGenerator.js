@@ -20,7 +20,7 @@ function generateTable(context, projectName, jsonData, jsonSchema, paperID){
     // new entry
     generateDataEnterForm(context, headers);
 
-    result += generateTableBody(jsonData, headers, editables);
+    result += generateTableBody(context, jsonData, headers, editables);
     // existing data
     //result += generateDataRows(type,projectName, data, headers);
     return result + "</table>";
@@ -142,8 +142,19 @@ function contextToDefinition(context){
         return "";
 }
 
-function generateDeleteButton(){
-    return "<td><button onclick=\"setClipboard('GG')\">Delete</button></td>";
+function generateDeleteButton(context, id){
+    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/remove/"+contextToDefinition(context)+"?id="+id;
+    return "<td><button onclick=\"callGetToRemove('"+url+"')\">Delete</button></td>";
+}
+
+function callGetToRemove(url){
+    var r = confirm("Do you want to remove it?");
+    if (r === true) {
+        $.get( url, function( data ) {
+            alert( "The data has removed." );
+            location.reload();
+        });
+    }
 }
 
 function generateRowID(obj, key){
@@ -153,20 +164,20 @@ function generateRowID(obj, key){
         return "new"+"_"+key;
 }
 
-function generateRow(jsonDatum, key, editables) {
+function generateRow(context, jsonDatum, key, editables) {
     if(key === 'delete')
-        return generateDeleteButton();
+        return generateDeleteButton(context, jsonDatum['id']);
     if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
         return "";
     return generateForm(jsonDatum[key], key, editables.includes(key));
 }
 
-function generateTableBody(jsonData, keys, editables){
+function generateTableBody(context, jsonData, keys, editables){
     var result = "";
     for(var t=0; t < jsonData.length; t++) {
         result += "<tr class=\"new_entry\">";
         for (var k = 0; k < keys.length; k++) {
-            result += generateRow(jsonData[t], keys[k], editables);
+            result += generateRow(context, jsonData[t], keys[k], editables);
         }
         result += "</tr>";
     }
