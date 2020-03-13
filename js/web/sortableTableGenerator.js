@@ -82,7 +82,7 @@ function generateForm(obj, key, editable = true){
     var rowContent = generateContent(obj, key);
     if(obj === undefined && key){ // for new entry
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if(key === 'rating' || key === 'order'){
+        if(key === 'importance' || key === 'order'){
             return "<td><input type=\"number\" class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</input></td>";
         }
         else if(key === 'toPlant')

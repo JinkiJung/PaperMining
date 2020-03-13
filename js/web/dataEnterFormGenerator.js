@@ -32,8 +32,8 @@ function initializeInputFields(context){
     // give random paperID
     document.getElementById("new_id").value = contextToDefinition(context)+ '_' + Math.random().toString(36).substr(2, 7);;
 
-    if(document.getElementById("new_rating"))
-        document.getElementById("new_rating").value = 0;
+    if(document.getElementById("new_importance"))
+        document.getElementById("new_importance").value = 0;
 
     // set contributor's name from local
     if(document.getElementById("new_contributor") && hasLocalUserName())
@@ -120,7 +120,7 @@ function collectDatum(context, paperID) {
             if(attributeName === 'comment')
                 newJsonDatum[attributeName] = {"content":fieldNames[i].value, "commenter":getValueFromLS(), "timestamp":"time"};
             // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            else if(attributeName === 'rating')
+            else if(attributeName === 'importance')
                 newJsonDatum[attributeName] = parseFloat(fieldNames[i].value);
             else if(attributeName === 'toPlant')
                 newJsonDatum[attributeName] = fieldNames[i].value === 'true' ? true: false;
@@ -135,8 +135,8 @@ function collectDatum(context, paperID) {
     if(context === 'mine'){
         if(paperID)
             newJsonDatum['paperID'] = paperID;
-        if(newJsonDatum['rating'] === "")
-            newJsonDatum['rating'] = 0;
+        if(newJsonDatum['importance'] === "")
+            newJsonDatum['importance'] = 0;
         if(newJsonDatum['toPlant'] === "")
             newJsonDatum['toPlant'] = false;
     }

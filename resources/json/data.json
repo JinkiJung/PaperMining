@@ -17,6 +17,7 @@
       "id": "paper001",
       "title": "Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality",
       "bibtex": "@inproceedings{lee2019annotation, title={Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality}, author={Lee, Hyeopwoo and Kim, Hyejin and Monteiro, Diego Vilela and Goh, Youngnoh and Han, Daseong and Liang, Hai-Ning and Yang, Hyun Seung and Jung, Jinki}, booktitle={2019 IEEE International Symposium on Mixed and Augmented Reality (ISMAR)}, pages={318--327}, year={2019}, organization={IEEE} }",
+      "importance": 4,
       "pdf": "./resources/pdf/paper001.pdf",
       "contributor": "Jinki Jung"
     },
@@ -24,6 +25,7 @@
       "id": "paper002",
       "title": "Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality",
       "bibtex": "@inproceedings{lee2019annotation, title={Annotation vs. Virtual Tutor: Comparative Analysis on the Effectiveness of Visual Instructions in Immersive Virtual Reality}, author={Lee, Hyeopwoo and Kim, Hyejin and Monteiro, Diego Vilela and Goh, Youngnoh and Han, Daseong and Liang, Hai-Ning and Yang, Hyun Seung and Jung, Jinki}, booktitle={2019 IEEE International Symposium on Mixed and Augmented Reality (ISMAR)}, pages={318--327}, year={2019}, organization={IEEE} }",
+      "importance": 5,
       "pdf": "./resources/pdf/paper002.pdf",
       "contributor": "Jinki Jung"
     }
@@ -38,7 +40,7 @@
         "content": "what?",
         "commenter": "Jinki Jung"
       },
-      "rating": 3,
+      "importance": 3,
       "order": 1,
       "toPlant": true,
       "written": false,
@@ -53,7 +55,7 @@
         "content": "what?",
         "commenter": "Jinki Jung"
       },
-      "rating": 3,
+      "importance": 3,
       "order": 1,
       "toPlant": true,
       "written": false,
@@ -68,7 +70,7 @@
         "content": "what?",
         "commenter": "Jinki Jung"
       },
-      "rating": 3,
+      "importance": 3,
       "order": 1,
       "toPlant": true,
       "written": false,

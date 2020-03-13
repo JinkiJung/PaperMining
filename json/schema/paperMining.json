@@ -196,7 +196,7 @@
             "default": ["mine", "carve"]
           }
         },
-        "rating": {
+        "importance": {
           "type": "number",
           "minimum": 0,
           "maximum": 5,
@@ -361,6 +361,27 @@
         },
         "pdf": {
           "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          }
+        },
+        "importance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
           "_visible": {
             "type": "array",
             "items":{
