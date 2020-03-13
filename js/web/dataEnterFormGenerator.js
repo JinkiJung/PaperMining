@@ -169,7 +169,7 @@ function registerDatum(context, jsonDatum){
 function sendJsonDatum(context, data){
     // construct an HTTP request
     var xhr = new XMLHttpRequest();
-    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/"+contextToDefinition(context);
+    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/store/"+contextToDefinition(context);
     xhr.open("POST", url, true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     // send the collected data as JSON
@@ -252,7 +252,7 @@ function setPDFFilePath(text){
 function passTitle(){
     var title = getTitleFromTextArea();
     if(title && title.length > 0){
-        window.open('http://'+defaultConfig.web.url+':'+defaultConfig.web.port+'/pdfupload?title='+title,'pagename','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable,height=260,width=370');
+        window.open('http://'+defaultConfig.web.url+':'+defaultConfig.web.port+'/uploadPDF?title='+title,'pagename','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable,height=260,width=370');
         //return true;
     }
     else

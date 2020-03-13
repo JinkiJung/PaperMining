@@ -21,7 +21,7 @@ module.exports = function(app)
     });
     var upload = multer({ storage : storage}).single('userPaper');
 
-    app.get('/pdfupload',function(req,res){
+    app.get('/uploadPDF',function(req,res){
         //updator.update();
         paperTitle= getWritableName(req.query['title']);
         res.sendFile(path.resolve(__dirname+'../../../html/pdfFileUploader.html'));

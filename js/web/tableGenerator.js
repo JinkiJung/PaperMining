@@ -21,14 +21,11 @@ $(document).ready(function() {
                     var paperID = getURLParameter("paperID");
 
                     document.getElementById("title").innerHTML = "<center><H3>"+getTitle(jsonData, paperID)+"</H3></center>";
-                    if(context === "collect"){
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData["papers"], jsonSchema["definitions"]);
-                    }
-                    else if(context === 'mine'){
+                    if(context === 'mine'){
                         document.getElementById("dataTable").innerHTML = generateTable(context,title, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"]);
                     }
                     else{
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData["thoughts"], jsonSchema["definitions"]);
+                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData[contextToData(context)], jsonSchema["definitions"]);
                     }
                 }
             });

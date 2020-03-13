@@ -41,16 +41,28 @@ module.exports = {
                 res.send("The file saved: "+fullFilePath);
         });
     },
-    doesFileExist: function(fileName, res = undefined){
+    remove: function (fileName, fileExtension, folderName, res = undefined){
         var fileNameRevised= getWritableName(fileName);
-        fs.access(bibDir+fileNameRevised+'.bib', fs.F_OK, (err) => {
+        if(folderName === undefined)
+            folderName= "";
+        else
+            folderName += "/";
+        var fullFilePath = resourceDir + fileExtension + "/" +folderName+fileNameRevised+'.'+fileExtension;
+        module.exports.removeWithPath(fullFilePath, res);
+    },
+    removeWithPath: function (fullFilePath, res = undefined) {
+        fs.access(fullFilePath, fs.F_OK, (err) => {
             if (err) {
-                res.send("Not exist.");
-                return;
+                res.status(500).send(err);
             }
-            res.send(fileNameRevised+'.bib');
             //file exists
-        })
+            try {
+                fs.unlinkSync(fullFilePath); //file removed
+                console.log("The file removed: "+fullFilePath);
+            } catch(err) {
+                res.status(500).send(err);
+            }
+        });
     },
     createFolder: function (newDir){
         if (newDir == ".")

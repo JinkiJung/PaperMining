@@ -40,6 +40,25 @@
       "title": "Section",
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          }
+        },
         "name": {
           "type": "string"
         },
