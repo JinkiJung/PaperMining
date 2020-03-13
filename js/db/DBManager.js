@@ -19,8 +19,13 @@ module.exports = {
                 throw err;
             }
             var jsonData = JSON.parse(rawData);
-            jsonData[context+'s'].push(jsonDatum);
-            fileManager.write("data", "json", "", JSON.stringify(jsonData));
+            var index = getIndex(jsonData[context+'s'], jsonDatum.id);
+            if(index){
+                console.log(jsonData[context+'s'][index]);
+                jsonData[context+'s'][index] = jsonDatum;
+                console.log(jsonData[context+'s'][index]);
+                fileManager.write("data", "json", "", JSON.stringify(jsonData));
+            }
         });
     },
     updateDataToDB: function(context, updatedJsonData){
@@ -32,5 +37,12 @@ module.exports = {
             jsonData[context+'s'] = updatedJsonData;
             fileManager.write("data", "json", "", JSON.stringify(jsonData));
         });
+    }
+}
+
+function getIndex(jsonData, id){
+    for(var i=0; i<jsonData.length ; i++){
+        if(jsonData[i].id === id)
+            return i;
     }
 }

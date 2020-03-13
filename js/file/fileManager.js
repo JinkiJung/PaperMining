@@ -41,6 +41,36 @@ module.exports = {
                 res.send("The file saved: "+fullFilePath);
         });
     },
+    update: function (fileName, fileExtension, folderName, content, res = undefined){
+        module.exports.createFolder(resourceDir + fileExtension );
+        var fileNameRevised= getWritableName(fileName);
+        if(folderName === undefined)
+            folderName= "";
+        else
+            folderName += "/";
+        var fullFilePath = resourceDir + fileExtension + "/" +folderName+fileNameRevised+'.'+fileExtension;
+        fs.stat(fullFilePath, function(err, stat) {
+            if(err == null) {
+                //file exists
+                try {
+                    fs.writeFile(fullFilePath, content, function(err) {
+                        if(err) {
+                            if(res)
+                                res.send('Fetch failed.');
+                            return console.log(err);
+                        }
+                        console.log("The file updated: "+fullFilePath);
+                        if(res)
+                            res.send("The file updated: "+fullFilePath);
+                    });
+                } catch(err) {
+                    res.status(500).send(err.message);
+                }
+            } else if(err.code == 'ENOENT') {
+                res.status(500).send(err.message);
+            }
+        });
+    },
     remove: function (fileName, fileExtension, folderName, res = undefined){
         var fileNameRevised= getWritableName(fileName);
         if(folderName === undefined)
@@ -53,14 +83,14 @@ module.exports = {
     removeWithPath: function (fullFilePath, res = undefined) {
         fs.access(fullFilePath, fs.F_OK, (err) => {
             if (err) {
-                res.status(500).send(err);
+                res.status(500).send(err.message);
             }
             //file exists
             try {
                 fs.unlinkSync(fullFilePath); //file removed
                 console.log("The file removed: "+fullFilePath);
             } catch(err) {
-                res.status(500).send(err);
+                res.status(500).send(err.message);
             }
         });
     },

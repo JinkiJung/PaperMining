@@ -16,7 +16,7 @@ module.exports = function(app){
 
     app.post('/update/:type', express.json({type: '*/*'}), (req, res) => {
         if(paperMiningTypes.includes(req.params.type))
-            validateAndStore(req.params.type, req, res);
+            validateAndUpdate(req.params.type, req, res);
         else
             res.status(500).send("Type error: '"+req.params.type+"' does not supported.");
     });
@@ -28,6 +28,7 @@ module.exports = function(app){
             res.status(500).send("Type error: '"+req.params.type+"' does not supported.");
     });
 }
+
 
 function remove(dataType, req, res) {
     res.setHeader('Access-Control-Allow-Origin', 'http://' + defaultConfig.web.url + ':' + defaultConfig.web.port);
@@ -79,6 +80,52 @@ function getDatum(jsonData, id){
             return jsonData[i];
     }
 }
+
+function validateAndUpdate(dataType, req, res){
+    res.setHeader('Access-Control-Allow-Origin', 'http://'+defaultConfig.web.url+':'+defaultConfig.web.port);
+    if(req.body) {
+        try {
+            // append timestamp from server
+            //serverTime.getCurrentTime();
+
+            // read schema file
+            fs.readFile('./json/schema/paperMining.json', function read(err, data) {
+                if (err) {
+                    throw err;
+                }
+                var jsonSchema = JSON.parse(data);
+                var fileName = req.body.id;
+                var problem = validator.findProblem(dataType,jsonSchema["definitions"][dataType], req.body);
+                if(problem)
+                    res.status(500).send(problem.message);
+                else{
+                    // check the coincidence of param 'id' and data 'id
+                    if(req.body.id !== req.query['id']){
+                        res.status(500).send("the parameter 'id' does not match with data attribute 'id'.");
+                        return ;
+                    }
+                    try{
+                        fileManager.update(fileName, "json", dataType+"s", JSON.stringify(req.body),res);
+                        dbManager.updateDatumToDB(dataType, req.body);
+                    }
+                    catch(e) {
+                        res.status(500).send(e.message); // error in the above string (in this case, yes)!
+                        console.log(e.message);
+                    }
+                }
+            });
+        } catch(e) {
+            res.status(500).send(e.message); // error in the above string (in this case, yes)!
+            console.log(e.message);
+        }
+    }
+    else{
+        res.status(500).send("request does not have a body.");
+        console.log("request does not have a body.");
+    }
+
+}
+
 
 function validateAndStore(dataType, req, res){
     res.setHeader('Access-Control-Allow-Origin', 'http://'+defaultConfig.web.url+':'+defaultConfig.web.port);
