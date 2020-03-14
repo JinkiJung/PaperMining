@@ -28,9 +28,13 @@ function generateDataEnterForm(context, headers){
     };
 }
 
+function generateShortRand(){
+    return Math.random().toString(36).substr(2, 7);
+}
+
 function initializeInputFields(context){
     // give random paperID
-    document.getElementById("new_id").value = contextToDefinition(context)+ '_' + Math.random().toString(36).substr(2, 7);;
+    document.getElementById("new_id").value = contextToDefinition(context)+ '_' + generateShortRand();
 
     if(document.getElementById("new_importance"))
         document.getElementById("new_importance").value = 0;
@@ -79,7 +83,7 @@ function generateNewEntryCore(context, header){
         var textValue="";
 
         result += "<td class=table_title width=10><b>"+capitalizeFirstLetter(header[k])+"</b></td>";
-        result += generateForm(undefined, header[k]);
+        result += generateForm("new",undefined, header[k]);
         result +="</tr>";
     }
     var paperID = getURLParameter("paperID");
@@ -95,7 +99,7 @@ function generateNewEntryCore(context, header){
 function addNewData(context, paperID){
     var jsonDatum = collectDatum(context, paperID);
     if(jsonDatum)
-        registerValidDatum(context, jsonDatum);
+        registerValidDatum(context, jsonDatum, "store");
 }
 
 function hasLocalUserName(){
@@ -123,7 +127,7 @@ function collectDatum(context, paperID) {
             else if(attributeName === 'importance')
                 newJsonDatum[attributeName] = parseFloat(fieldNames[i].value);
             else if(attributeName === 'toPlant')
-                newJsonDatum[attributeName] = fieldNames[i].value === 'true' ? true: false;
+                newJsonDatum[attributeName] = fieldNames[i].checked;
             // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else
                 newJsonDatum[attributeName] = fieldNames[i].value;
@@ -143,15 +147,18 @@ function collectDatum(context, paperID) {
     return newJsonDatum;
 }
 
-function validateDatum(context, schema, data) {
+function validateDatum(context, schema, data, command = undefined) {
     var ajv = new Ajv;
     var valid = ajv.validate(schema, data);
-    if (!valid) alert(getAjvErrorMessages(ajv.errors));
-    else
-        registerDatum(context, data);
+    if (!valid) { alert(getAjvErrorMessages(ajv.errors)); return false; }
+    else if(command)
+        sendJsonDatum(context, data, command);
+    return true;
 }
 
 function registerDatum(context, jsonDatum){
+    sendJsonDatum(context, jsonDatum);
+    /*
     $.ajax({
         type: "GET",
         url: "../resources/json/data.json",
@@ -164,12 +171,14 @@ function registerDatum(context, jsonDatum){
             alert("Error in loading json schema.");
         }
     });
+     */
 }
 
-function sendJsonDatum(context, data){
+function sendJsonDatum(context, data, command){
     // construct an HTTP request
     var xhr = new XMLHttpRequest();
-    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/store/"+contextToDefinition(context);
+    var id_str = command === 'update' ? "?id="+data.id : "";
+    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/"+command+"/"+contextToDefinition(context) + id_str;
     xhr.open("POST", url, true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     // send the collected data as JSON
@@ -193,14 +202,14 @@ function getAjvErrorMessages(errors){
     return message;
 }
 
-function registerValidDatum(context, jsonDatum){
+function registerValidDatum(context, jsonDatum, command = undefined){
     $.ajax({
         type: "GET",
         url: "../json/schema/paperMining.json",
         dataType: "text",
         success: function (data) {
             var schemaData = JSON.parse(data);
-            validateDatum(context, schemaData["definitions"][contextToDefinition(context)], jsonDatum);
+            var result = validateDatum(context, schemaData["definitions"][contextToDefinition(context)], jsonDatum, command);
         },
         fail: function (data) {
             alert("Error in loading json schema.");

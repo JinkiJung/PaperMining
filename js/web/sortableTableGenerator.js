@@ -68,6 +68,8 @@ function generateContent(obj, key){
         else
             return "error";
     }
+    else if(typeof obj === 'boolean')
+        return obj === true ? "checked" : "";
     else if(obj)
         return obj;
     else if(obj === 0)
@@ -76,9 +78,9 @@ function generateContent(obj, key){
         return "";
 }
 
-function generateForm(obj, key, editable = true){
+function generateForm(id, obj, key, editable = true){
     var htmlElement = "p";
-    var rowId = generateRowID(obj, key);
+    var rowId = generateRowID(id, key);
     var rowContent = generateContent(obj, key);
     if(obj === undefined && key){ // for new entry
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,33 +97,33 @@ function generateForm(obj, key, editable = true){
     }
     else if(typeof obj === "boolean"){
         if(editable)
-            return "<td><input type='checkbox' id=\"" + rowId + "\" value = " + rowContent + "></input></td>";
+            return "<td><input type='checkbox' id=\"" + rowId + "\" " + rowContent + " class = \""+id+"\" data-attribute-type = '"+key+"'></input></td>";
         else
-            return "<td><p id=\"" + rowId + "\">"+rowContent+"</p></td>";
+            return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
     else if(key==="id" || key ==='paperID'){
         if(editable)
-            return "<td><a href='table.html?context=mine&paperID="+obj+"'>"+ rowContent + "</a></td>";
+            return "<td><a href='table.html?context=mine&paperID="+obj+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ rowContent + "</a></td>";
         else
-            return "<td><p id=\"" + rowId + "\">"+rowContent+"</p></td>";
+            return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
     else if(key==="bibtex"){
         if(editable)
-            return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button><br><textarea id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
+            return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button><br><textarea id=\"" + rowId + "\"  class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</textarea></td>";
         else
             return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
     }
     else if(key==="pdf"){
         if(editable)
-            return "<td><a href='../"+rowContent+"'>Open</a><br><textarea id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
+            return "<td><a href='../"+rowContent+"'>Open</a><br><textarea id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</textarea></td>";
         else
             return "<td><a href='../"+rowContent+"'>Open</a></td>";
     }
     else{
         if(editable)
-            return "<td><textarea id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
+            return "<td><div id=\"" + rowId + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</></td>";
         else
-            return "<td><p id=\"" + rowId + "\">"+rowContent+"</p></td>";
+            return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
 }
 
@@ -157,19 +159,20 @@ function callGetToRemove(url){
     }
 }
 
-function generateRowID(obj, key){
-    if(obj)
-        return obj + "_" + key;
+function generateRowID(id, key){
+    if(id === "new")
+        return id + "_" + key;
     else
-        return "new"+"_"+key;
+        return id + "_" + key + generateShortRand();
 }
 
 function generateRow(context, jsonDatum, key, editables) {
+    var id = jsonDatum['id'];
     if(key === 'delete')
-        return generateDeleteButton(context, jsonDatum['id']);
+        return generateDeleteButton(context, id);
     if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
         return "";
-    return generateForm(jsonDatum[key], key, editables.includes(key));
+    return generateForm(id, jsonDatum[key], key, editables.includes(key));
 }
 
 function generateTableBody(context, jsonData, keys, editables){
@@ -265,106 +268,8 @@ function sortTable(numElement, skipInterval, priorityMap) {
 
 }
 
-function compareWithContext(x,y,priorityMap){
-    if(priorityMap.size>0){
-        var xValue = priorityMap.get(x);
-        var yValue = priorityMap.get(y);
-        return (xValue==undefined?9999:xValue)>(yValue==undefined?9999:yValue);
-    }
-    else
-        return x > y;
-}
-
-function checkUpdated(dateString){
-
-    if(dateString==undefined)
-        return 0;
-    var time = dateString.split('/');
-    var today = new Date();
-    var paperDate = new Date(time[0], Number(time[1]) - 1, time[2]);
-    var betweenDay = (today.getTime() - paperDate.getTime()) / 1000/60/60/24;
-
-    if(betweenDay <= 12) return 1;
-    else return 0;
-}
-
-function getUUID(type, id, label){
-    return type+"_"+id+"_"+label;
-}
-
-function getUpdateButton(projectName, type, id, label){
-    return "<button id=btn_"+getUUID(type,id,label)+" class='rowSubmitButton' onclick=\"passOneParameter('"+projectName+"',undefined,"+getUUID(type,id,label)+")\">Update</button>";
-}
-
-function generateDataRows(type, projectName, data, headers){
-    var result = "";
-    var dateIndex = headers.indexOf("timestamp");
-    var commentIndex = headers.indexOf("comment");
-    var tagIndex = headers.indexOf("tag");
-
-    for (var i=data.length-1; i>=1; i--) {
-        var dataLine = "";
-        var dataRow = data[i];
-        var shouldHighlighted = checkUpdated(dataRow[dateIndex]);
-        var id = i;
-
-        if(type =='tag'){
-            var tagName = ("_"+dataRow[tagIndex]).replace(" ","_");
-            dataLine += "<tr class=\"_tag "+tagName+"\">";
-        }
-        else{
-            var tags = getPaperTags(i);
-            dataLine += "<tr class=\"clickable _tag "+tags+"\">";
-        }
-
-        for(var k=0; k<dataRow.length ; k++){
-            var label = headers[k];
-            if(k==0){
-                id = dataRow[k];
-                dataLine+= "<td style=\"display:none;\">"+ dataRow[k] + "</td>";
-            }
-            else{
-                var highLightStyle = "";
-                if(shouldHighlighted)
-                    highLightStyle ="class='highlight'";
-
-                // last element
-                if(k==dataRow.length-1){
-                    if(type == 'tag')
-                        dataLine += "<td><a href=\"detail.html?proj="+projectName+"&id="+dataRow[k]+"\">"+dataRow[k]+"</a></td>";
-                    else
-                        dataLine += "<td "+"><a href=\"detail.html?proj="+projectName+"&id="+(id)+"\">paper detail</a></td>";
-                }
-                else
-                {
-                    if(type == 'tag'){
-                        if(k==commentIndex)
-                            dataLine+= "<td class=unselectable><a onclick = \"setClipboard('"+ dataRow[k]+"')\">"+dataRow[k] + "</a></td>";
-                        else
-                            dataLine+= "<td class=unselectable>"+ dataRow[k] + "</td>";
-                    }
-                    else{
-                        if(label =='timestamp')
-                            dataLine+= "<td "+"><div id="+getUUID("paper",id,label)+" contenteditable=\"true\">"+ convertUTCDateToLocalDate(dataRow[k]) + "</div><br>" + getUpdateButton(projectName, "paper",i,label)+"</td>";
-                        else
-                            dataLine+= "<td "+"><div id="+getUUID("paper",id,label)+" contenteditable=\"true\">"+ dataRow[k] + "</div><br>" + getUpdateButton(projectName, "paper",i,label)+"</td>";
-                    }
-                }
-            }
-        }
-        result += dataLine + "</tr>";
-    }
-    return result;
-}
-
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function getAllKeys(jsonData){
-    var keys = [];
-    for(var k in jsonData) keys.push(k);
-    return keys;
 }
 
 function isEditable(context, jsonDatum){
@@ -402,68 +307,4 @@ function getVisiblesByContext(context, jsonData){
     }
     keys.push('delete');
     return keys;
-}
-
-function zeroPad(nr,base){
-    var  len = (String(base).length - String(nr).length)+1;
-    return len > 0? new Array(len).join('0')+nr : nr;
-}
-
-function convertUTCDateToLocalDate(string) {
-    var timestamp = string.split('/');
-    var date = new Date(Date.UTC(Number(timestamp[0]), Number(timestamp[1]-1), Number(timestamp[2]),
-        Number(timestamp[3]), Number(timestamp[4]), Number(timestamp[5])));
-    var datevalues = [
-        zeroPad(date.getFullYear(),1000),
-        zeroPad(date.getMonth()+1,10),
-        zeroPad(date.getDate(),10),
-        zeroPad(date.getHours(),10),
-        zeroPad(date.getMinutes(),10),
-        zeroPad(date.getSeconds(),10)
-    ];
-    return datevalues.join('/');
-}
-
-function getPaperDetail(index, columnLength){
-
-    var paperTagInfo="";
-    var paperDetail = "";
-    if(tagArray[index]!=undefined && tagArray[index].length!=undefined){
-        for(var k=0; k<tagArray[index].length ; k++){
-            // should be refined
-            paperDetail += "<b>["+tagArray[index][k][1] + "]\t";
-            paperDetail += "["+tagArray[index][k][3] + "]</b><br>";
-            paperDetail += tagArray[index][k][2] + " - by " + tagArray[index][k][4]+", " + tagArray[index][k][5]+"<br>";
-        }
-    }
-    paperTagInfo += "<tr class=\"content\"><td colspan="+columnLength+">"+paperDetail+"</td></tr>";
-    return paperTagInfo;
-}
-
-//////////////////////////////////// tag part ////////////////////////////////////
-
-function getMaxPaperID(data){
-    var maxID = 0;
-    for (var i=1; i<data.length; i++) {
-        var paperID = data[i][data[i].length-1] * 1;
-        if(paperID > maxID)
-            maxID = paperID;
-    }
-    return maxID;
-}
-
-function generateTagArray(data) {
-    tagArray = new Array(getMaxPaperID(data)+1);
-    for (var i=1; i<data.length; i++) {
-        var paperID = data[i][data[i].length-1];
-        if(tagArray[paperID]!=undefined){
-            tagArray[paperID].push(data[i]);
-        }
-        else{
-            var tempArray = new Array();
-            tempArray.push(data[i]);
-            tagArray[paperID] = tempArray;
-        }
-    }
-    return tagArray;
 }

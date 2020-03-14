@@ -25,9 +25,7 @@ module.exports = {
     write: function (fileName, fileExtension, folderName, content, res = undefined){
         module.exports.createFolder(resourceDir + fileExtension );
         var fileNameRevised= getWritableName(fileName);
-        if(folderName === undefined)
-            folderName= "";
-        else
+        if(folderName && folderName.length>0)
             folderName += "/";
         var fullFilePath = resourceDir + fileExtension + "/" +folderName+fileNameRevised+'.'+fileExtension;
         fs.writeFile(fullFilePath, content, function(err) {

@@ -27,6 +27,34 @@ $(document).ready(function() {
                     else{
                         document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData[contextToData(context)], jsonSchema["definitions"]);
                     }
+
+                    var storedText = "";
+                    $('div[contenteditable=true]').focusin(function(){
+                        storedText = $(this)[0].innerHTML;
+                    });
+                    $('div[contenteditable=true]').focusout(function(){
+                        if($(this)[0].innerHTML !== storedText){
+                            try{
+                                makeUpdate($(this)[0]);
+                            }
+                            catch (e) {
+                                alert(e.message);
+                                //$(this)[0].innerHTML = storedText;
+                                location.reload();
+                            }
+                        }
+                    });
+
+                    $('input[type=checkbox]').click(function(){
+                        try{
+                            makeUpdate($(this)[0]);
+                        }
+                        catch (e) {
+                            alert(e.message);
+                            //$(this)[0].innerHTML = storedText;
+                            location.reload();
+                        }
+                    });
                 }
             });
         }

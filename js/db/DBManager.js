@@ -20,10 +20,8 @@ module.exports = {
             }
             var jsonData = JSON.parse(rawData);
             var index = getIndex(jsonData[context+'s'], jsonDatum.id);
-            if(index){
-                console.log(jsonData[context+'s'][index]);
+            if(index>=0){
                 jsonData[context+'s'][index] = jsonDatum;
-                console.log(jsonData[context+'s'][index]);
                 fileManager.write("data", "json", "", JSON.stringify(jsonData));
             }
         });
@@ -45,4 +43,5 @@ function getIndex(jsonData, id){
         if(jsonData[i].id === id)
             return i;
     }
+    return -1;
 }
