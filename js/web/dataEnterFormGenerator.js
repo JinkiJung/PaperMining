@@ -150,7 +150,7 @@ function collectDatum(context, paperID) {
 function validateDatum(context, schema, data, command = undefined) {
     var ajv = new Ajv;
     var valid = ajv.validate(schema, data);
-    if (!valid) { alert(getAjvErrorMessages(ajv.errors)); return false; }
+    if (!valid) { alert(getAjvErrorMessages(ajv.errors)); location.reload(); return false; }
     else if(command)
         sendJsonDatum(context, data, command);
     return true;
@@ -188,6 +188,8 @@ function sendJsonDatum(context, data, command){
         if (xhr.readyState === 4 && xhr.status === 200) {
             //console.log(xhr.responseText);
             location.reload();
+            ////////////////// TO DO: refresh /////////////////////
+            //$("#dataTable").load(window.location.href+"#dataTable" );
         }
     };
 }

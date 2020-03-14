@@ -22,39 +22,37 @@ $(document).ready(function() {
 
                     document.getElementById("title").innerHTML = "<center><H3>"+getTitle(jsonData, paperID)+"</H3></center>";
                     if(context === 'mine'){
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"]);
+                        document.getElementById("dataTable").innerHTML = generateTable(context,title, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], !isItGitHub());
                     }
                     else{
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData[contextToData(context)], jsonSchema["definitions"]);
+                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData[contextToData(context)], jsonSchema["definitions"], !isItGitHub());
                     }
 
-                    var storedText = "";
-                    $('div[contenteditable=true]').focusin(function(){
-                        storedText = $(this)[0].innerHTML;
-                    });
-                    $('div[contenteditable=true]').focusout(function(){
-                        if($(this)[0].innerHTML !== storedText){
+                    if(!isItGitHub()){
+                        var storedText = "";
+                        $('div[contenteditable=true]').focusin(function(){
+                            storedText = $(this)[0].innerHTML;
+                        });
+                        $('div[contenteditable=true]').focusout(function(){
+                            if($(this)[0].innerHTML !== storedText){
+                                try{
+                                    makeUpdate($(this)[0]);
+                                }
+                                catch (e) {
+                                    alert(e.message);
+                                }
+                            }
+                        });
+
+                        $('input[type=checkbox]').click(function(){
                             try{
                                 makeUpdate($(this)[0]);
                             }
                             catch (e) {
                                 alert(e.message);
-                                //$(this)[0].innerHTML = storedText;
-                                location.reload();
                             }
-                        }
-                    });
-
-                    $('input[type=checkbox]').click(function(){
-                        try{
-                            makeUpdate($(this)[0]);
-                        }
-                        catch (e) {
-                            alert(e.message);
-                            //$(this)[0].innerHTML = storedText;
-                            location.reload();
-                        }
-                    });
+                        });
+                    }
                 }
             });
         }
@@ -65,4 +63,8 @@ function getURLParameter(name) {
     return decodeURI(
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
     );
+}
+
+function isItGitHub(){
+    return window.location.href.toLowerCase().includes("github");
 }

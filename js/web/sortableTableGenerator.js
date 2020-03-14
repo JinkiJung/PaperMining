@@ -5,7 +5,7 @@ function getTitle(jsonData, paperID){
         return jsonData["projectName"]
 }
 
-function generateTable(context, projectName, jsonData, jsonSchema, paperID){
+function generateTable(context, projectName, jsonData, jsonSchema, paperID, isEditable){
     var result = "";
     var trStyle = "";
     /*
@@ -18,7 +18,8 @@ function generateTable(context, projectName, jsonData, jsonSchema, paperID){
     // header
     result += generateTableHeader(headers, paperID);
     // new entry
-    generateDataEnterForm(context, headers);
+    if(isEditable === true)
+        generateDataEnterForm(context, headers);
 
     result += generateTableBody(context, jsonData, headers, editables);
     // existing data
@@ -155,6 +156,8 @@ function callGetToRemove(url){
         $.get( url, function( data ) {
             alert( "The data has removed." );
             location.reload();
+            ////////////////// TO DO: refresh /////////////////////
+            //$("#dataTable").load(window.location.href+"#dataTable" );
         });
     }
 }
