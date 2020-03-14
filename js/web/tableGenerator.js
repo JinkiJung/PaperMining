@@ -22,13 +22,13 @@ $(document).ready(function() {
 
                     document.getElementById("title").innerHTML = "<center><H3>"+getTitle(jsonData, paperID)+"</H3></center>";
                     if(context === 'mine'){
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], !isItGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context,title, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], !accessedFromGitHub());
                     }
                     else{
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData[contextToData(context)], jsonSchema["definitions"], !isItGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData[contextToData(context)], jsonSchema["definitions"], !accessedFromGitHub());
                     }
 
-                    if(!isItGitHub()){
+                    if(!accessedFromGitHub()){
                         var storedText = "";
                         $('div[contenteditable=true]').focusin(function(){
                             storedText = $(this)[0].innerHTML;
@@ -65,6 +65,6 @@ function getURLParameter(name) {
     );
 }
 
-function isItGitHub(){
+function accessedFromGitHub(){
     return window.location.href.toLowerCase().includes("github");
 }

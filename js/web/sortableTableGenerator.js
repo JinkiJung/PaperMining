@@ -5,7 +5,7 @@ function getTitle(jsonData, paperID){
         return jsonData["projectName"]
 }
 
-function generateTable(context, projectName, jsonData, jsonSchema, paperID, isEditable){
+function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
     var result = "";
     var trStyle = "";
     /*
@@ -16,7 +16,7 @@ function generateTable(context, projectName, jsonData, jsonSchema, paperID, isEd
     var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
     var editables = getEditablesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
     // header
-    result += generateTableHeader(headers, paperID);
+    result += generateTableHeader(headers);
     // new entry
     if(isEditable === true)
         generateDataEnterForm(context, headers);
