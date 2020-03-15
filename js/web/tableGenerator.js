@@ -29,35 +29,46 @@ $(document).ready(function() {
                     }
 
                     if(!accessedFromGitHub()){
-                        var storedText = "";
-                        $('div[contenteditable=true]').focusin(function(){
-                            storedText = $(this)[0].innerHTML;
-                        });
-                        $('div[contenteditable=true]').focusout(function(){
-                            if($(this)[0].innerHTML !== storedText){
-                                try{
-                                    makeUpdate($(this)[0]);
-                                }
-                                catch (e) {
-                                    alert(e.message);
-                                }
-                            }
-                        });
-
-                        $('input[type=checkbox]').click(function(){
-                            try{
-                                makeUpdate($(this)[0]);
-                            }
-                            catch (e) {
-                                alert(e.message);
-                            }
-                        });
+                        updateByFocusOut();
+                        fetchBibtexByFocusOut();
                     }
                 }
             });
         }
     });
 });
+
+function fetchBibtexByFocusOut(){
+    $('#new_title').focusout(function() {
+        console.log($(this).val());
+    });
+}
+
+function updateByFocusOut(){
+    var storedText = "";
+    $('div[contenteditable=true]').focusin(function(){
+        storedText = $(this)[0].innerHTML;
+    });
+    $('div[contenteditable=true]').focusout(function(){
+        if($(this)[0].innerHTML !== storedText){
+            try{
+                makeUpdate($(this)[0]);
+            }
+            catch (e) {
+                alert(e.message);
+            }
+        }
+    });
+
+    $('input[type=checkbox]').click(function(){
+        try{
+            makeUpdate($(this)[0]);
+        }
+        catch (e) {
+            alert(e.message);
+        }
+    });
+}
 
 function getURLParameter(name) {
     return decodeURI(

@@ -5,6 +5,7 @@ const express = require('express');
 const validator = require('../validator/validatorForServer');
 const fs = require('fs');
 const paperMiningTypes = ["thought", "section", "paper"];
+const bibGenerator = require('../bibtex/title2bibtex');
 
 module.exports = function(app){
     app.post('/store/:type', express.json({type: '*/*'}), (req, res) => {
@@ -26,6 +27,13 @@ module.exports = function(app){
             remove(req.params.type, req, res);
         else
             res.status(500).send("Type error: '"+req.params.type+"' does not supported.");
+    });
+
+    app.get('/getBibtex', (req, res) => {
+        if(req.query['title'] && req.query['title'].length>0)
+            bibGenerator.title2bibtex(req.query.title, res);
+        else
+            res.status(500).send("request does not have the 'title' parameter.");
     });
 }
 
