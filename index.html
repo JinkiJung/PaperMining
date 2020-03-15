@@ -12,7 +12,7 @@
 <script src="js/util/localStorage4User.js"></script>
 <center>
     <h1>PaperMining</h1>
-    <h2>Welcome, <div id="contributor_local" contenteditable="true"></div></h2>
+    <h2>Welcome, <div id="contributor_local" contenteditable="true" class="userNameField"></div></h2>
 </center>
 
 <script>
@@ -28,7 +28,8 @@
     });
 
     $('div[contenteditable=true]').blur(function() {
-        saveUserName("contributor_local");
+        if(doesHaveUserName())
+            saveUserName("contributor_local");
     });
 
 </script>
@@ -39,7 +40,7 @@
 </div>
 
 <center>
-    <H2><a href="./html/table.html?context=collect">Enter</a></H2><br>
+    <H2><button onclick="checkAndForward()">Enter</button></H2><br>
 
     forked from <a href="https://github.com/jinkijung/PaperMining">Paper Mining</a>
     <br>
@@ -47,6 +48,11 @@
 </center>
 
 <script>
+    function checkAndForward(){
+        if(doesHaveUserName())
+            window.location.href = "./html/table.html?context=collect";
+    }
+
     function doesHaveUserName(){
         var userEntry = document.getElementById("contributor_local");
         var userName = userEntry.textContent;
@@ -57,12 +63,6 @@
         }
         else
             return true;
-    }
-
-    function getLink(projName){
-        if(doesHaveUserName()){
-            location.href='share.html?proj='+projName;
-        }
     }
 
 </script>

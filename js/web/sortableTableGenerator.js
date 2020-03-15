@@ -13,7 +13,7 @@ function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
         trStyle = "class=\"nodrop nodrag\"";
      */
     result += "<table id=\"sortableTable\"><tr "+trStyle+">";
-    var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
+    var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
     var editables = getEditablesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
     // header
     result += generateTableHeader(headers);
@@ -302,12 +302,13 @@ function getEditablesByContext(context, jsonData){
     return keys;
 }
 
-function getVisiblesByContext(context, jsonData){
+function getVisiblesByContext(context, jsonData, isEditable){
     var keys = [];
     for(var k in jsonData) {
         if(isVisible(context, jsonData[k]))
             keys.push(k);
     }
-    keys.push('delete');
+    if(isEditable === true)
+        keys.push('delete');
     return keys;
 }

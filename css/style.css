@@ -258,6 +258,10 @@ input.tag_test {
     float: right;
 }
 
+.userNameField{
+    height: 35px;
+}
+
 div.alignright {
     font-family: "Staatliches", sans-serif;
     font-size: 30px;
