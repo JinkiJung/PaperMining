@@ -42,6 +42,7 @@
       "properties": {
         "id": {
           "type": "string",
+          "description" : "The UUID of a section",
           "_visible": {
             "type": "array",
             "items":{
@@ -60,13 +61,16 @@
           }
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "description" : "Section name"
         },
         "number": {
-          "type": "string"
+          "type": "string",
+          "description" : "Section (hierarchical) number"
         },
         "order": {
-          "type": "integer"
+          "type": "integer",
+          "description" : "Order of the section"
         }
       }
     },
@@ -74,14 +78,37 @@
       "title": "Comment",
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "description" : "The UUID of a comment",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          }
+        },
         "content": {
-          "type": "string"
+          "type": "string",
+          "description" : "Actual comment"
         },
         "commenter": {
-          "type": "string"
+          "type": "string",
+          "description" : "User who made the comment"
         },
         "timestamp": {
-          "type": "string"
+          "type": "string",
+          "description" : "Timestamp of comment"
         }
       }
     },
@@ -92,6 +119,7 @@
       "properties": {
         "id": {
           "type": "string",
+          "description" : "The UUID of a thought",
           "_visible": {
             "type": "array",
             "items":{
@@ -109,8 +137,29 @@
             "default": []
           }
         },
+        "order": {
+          "type": "integer",
+          "description" : "Order of thoughts to be planted",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["carve"]
+          }
+        },
         "section": {
           "type": "string",
+          "description" : "Section related to the thought",
           "_visible": {
             "type": "array",
             "items":{
@@ -130,6 +179,7 @@
         },
         "tag": {
           "type": "string",
+          "description" : "Tag/keyword related to the thought",
           "_visible": {
             "type": "array",
             "items":{
@@ -149,6 +199,7 @@
         },
         "quotation": {
           "type": "string",
+          "description" : "Quotation from a collected paper",
           "_visible": {
             "type": "array",
             "items":{
@@ -168,6 +219,7 @@
         },
         "comment": {
           "type": "object",
+          "description" : "Actual thought",
           "properties": {
             "content": {
               "type": "string"
@@ -198,6 +250,7 @@
         },
         "importance": {
           "type": "number",
+          "description" : "Significance of thought for the plant",
           "minimum": 0,
           "maximum": 5,
           "_visible": {
@@ -217,27 +270,9 @@
             "default": ["mine", "carve"]
           }
         },
-        "order": {
-          "type": "integer",
-          "_visible": {
-            "type": "array",
-            "items":{
-              "type": "string",
-              "enum": ["collect", "mine", "carve", "plant"]
-            },
-            "default": ["carve"]
-          },
-          "_editable": {
-            "type": "array",
-            "items":{
-              "type": "string",
-              "enum": ["collect", "mine", "carve", "plant"]
-            },
-            "default": ["carve"]
-          }
-        },
         "toPlant": {
           "type": "boolean",
+          "description" : "Mark of the thought to be planted",
           "_visible": {
             "type": "array",
             "items":{
@@ -257,6 +292,7 @@
         },
         "written": {
           "type": "boolean",
+          "description" : "Confirmation of the thought plant",
           "_visible": {
             "type": "array",
             "items":{
@@ -276,6 +312,7 @@
         },
         "paperID": {
           "type": "string",
+          "description" : "ID of the related paper",
           "_visible": {
             "type": "array",
             "items":{
@@ -304,6 +341,7 @@
       "properties": {
         "id": {
           "type": "string",
+          "description" : "The UUID of a paper",
           "_visible": {
             "type": "array",
             "items":{
@@ -323,6 +361,7 @@
         },
         "title": {
           "type": "string",
+          "description" : "Title of a paper",
           "_visible": {
             "type": "array",
             "items":{
@@ -342,6 +381,7 @@
         },
         "bibtex": {
           "type": "string",
+          "description" : "Bibtex of a paper",
           "_visible": {
             "type": "array",
             "items":{
@@ -361,6 +401,7 @@
         },
         "pdf": {
           "type": "string",
+          "description" : "PDF link of a paper",
           "_visible": {
             "type": "array",
             "items":{
@@ -380,6 +421,7 @@
         },
         "importance": {
           "type": "number",
+          "description" : "Relevance of paper to the topic",
           "minimum": 0,
           "maximum": 5,
           "_visible": {
@@ -401,6 +443,7 @@
         },
         "contributor": {
           "type": "string",
+          "description" : "User who added the paper",
           "_visible": {
             "type": "array",
             "items":{

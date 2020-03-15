@@ -14,11 +14,12 @@ function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
      */
     result += "<table id=\"sortableTable\"><tr "+trStyle+">";
     var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
+    var descriptions = getDescriptionsByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
     var editables = getEditablesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
 
     sortingState = Array(headers.length).fill(false);
     // header
-    result += generateTableHeader(headers);
+    result += generateTableHeader(headers, descriptions);
     // new entry
     if(isEditable === true)
         generateDataEnterForm(context, headers);
@@ -58,10 +59,10 @@ function getThoughtFromPaperID(jsonThoughtData, paperID){
     return items;
 }
 
-function generateTableHeader(headers){
+function generateTableHeader(headers, descriptions){
     var result = "";
     for( var k=0; k<headers.length ; k++){
-        result+= "<td class=table_header><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+headers[k]+"</span></button></td>";
+        result+= "<td class=table_header><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+descriptions[k]+"</span></button></td>";
     }
     result += "</tr>";
     return result;
@@ -126,6 +127,12 @@ function generateForm(id, obj, key, editable = true){
             return "<td><a href='../"+rowContent+"'>Open</a><br><textarea id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</textarea></td>";
         else
             return "<td><a href='../"+rowContent+"'>Open</a></td>";
+    }
+    else if(key==="order"){
+        if(editable)
+            return "<td class='unselectable'><div id=\"" + rowId + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</></td>";
+        else
+            return "<td class='unselectable'><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
     else{
         if(editable)
@@ -251,6 +258,18 @@ function getVisiblesByContext(context, jsonData, isEditable){
     if(isEditable === true)
         keys.push('delete');
     return keys;
+}
+
+function getDescriptionsByContext(context, jsonData, isEditable){
+    var descriptions = [];
+    for(var k in jsonData) {
+        if(isVisible(context, jsonData[k])){
+            descriptions.push(jsonData[k]["description"]);
+        }
+    }
+    if(isEditable === true)
+        descriptions.push('To say good bye to data');
+    return descriptions;
 }
 
 
