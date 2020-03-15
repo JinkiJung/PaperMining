@@ -8,10 +8,7 @@ function getTitle(jsonData, paperID){
 function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
     var result = "";
     var trStyle = "";
-    /*
-    if(type !== 'papers')
-        trStyle = "class=\"nodrop nodrag\"";
-     */
+    trStyle = "class=\"nodrop nodrag\"";
     result += "<table id=\"sortableTable\"><tr "+trStyle+">";
     var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
     var descriptions = getDescriptionsByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
@@ -62,7 +59,7 @@ function getThoughtFromPaperID(jsonThoughtData, paperID){
 function generateTableHeader(headers, descriptions){
     var result = "";
     for( var k=0; k<headers.length ; k++){
-        result+= "<td class=table_header><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+descriptions[k]+"</span></button></td>";
+        result+= "<td class='table_header'><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+descriptions[k]+"</span></button></td>";
     }
     result += "</tr>";
     return result;
@@ -114,7 +111,8 @@ function generateForm(id, obj, key, editable = true){
         if(editable)
             return "<td><a href='table.html?context=mine&paperID="+obj+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ rowContent + "</a></td>";
         else
-            return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
+            //return "<td><div id=\"" + rowId + "\" class='unselectable'>"+rowContent+"</div></td>";
+            return "<td>"+rowContent+"</td>";
     }
     else if(key==="bibtex"){
         if(editable)
@@ -129,10 +127,7 @@ function generateForm(id, obj, key, editable = true){
             return "<td><a href='../"+rowContent+"'>Open</a></td>";
     }
     else if(key==="order"){
-        if(editable)
-            return "<td class='unselectable'><div id=\"" + rowId + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</></td>";
-        else
-            return "<td class='unselectable'><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
+        return "<td class='unselectable'><div id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>"+rowContent+"</div></td>";
     }
     else{
         if(editable)
@@ -286,7 +281,6 @@ function sortTable(numElement) {
         /*Loop through all table rows (except the
         first, which contains table headers):*/
         rows = table.rows;
-        console.log(rows);
         for (i = 0; i < (rows.length - 1); i+=1) {
             if(hasClass(rows[i],'entry') === false)
                 continue;
@@ -296,8 +290,6 @@ function sortTable(numElement) {
             one from current row and one from the next:*/
             x = getPriority(rows[i].getElementsByTagName("TD")[numElement].children[0]);
             y = getPriority(rows[i + 1].getElementsByTagName("TD")[numElement].children[0]);
-            console.log(x);
-            console.log(y);
             //check if the two rows should switch place:
             if(x!==y && compareWithContext(x,y) ^ sortingState[numElement]){
                 shouldSwitch=true;
@@ -312,13 +304,11 @@ function sortTable(numElement) {
         }
     }
 
-    console.log(sortingState[numElement]);
     sortingState[numElement] = !sortingState[numElement];
-    console.log(sortingState[numElement]);
+
 }
 
 function compareWithContext(x, y){
-    console.log(typeof x);
     if(typeof x === 'integer' || typeof x === 'number')
         return x > y;
     else{
