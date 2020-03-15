@@ -18,6 +18,9 @@ $(document).ready(function() {
                     if(context==='null')
                         context = 'collect';
 
+                    if(context === 'plant')
+                        jsonData[contextToData(context)] = filterForPlant(jsonData[contextToData(context)]);
+
                     var paperID = getURLParameter("paperID");
 
                     document.getElementById("title").innerHTML = "<center><H3>"+getTitle(jsonData, paperID)+"</H3></center>";
@@ -37,6 +40,17 @@ $(document).ready(function() {
         }
     });
 });
+
+function filterForPlant(jsonData){
+    if(jsonData === undefined)
+        return [];
+    var filteredJsonData = [];
+    for(var i=0; i<jsonData.length ; i++){
+        if(jsonData[i]["toPlant"]===true)
+            filteredJsonData.push(jsonData[i]);
+    }
+    return filteredJsonData;
+}
 
 function fetchBibtexByFocusOut(){
     $('#new_title').focusout(function() {

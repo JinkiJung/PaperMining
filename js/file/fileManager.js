@@ -64,7 +64,7 @@ module.exports = {
                 } catch(err) {
                     res.status(500).send(err.message);
                 }
-            } else if(err.code == 'ENOENT') {
+            } else if(err.code === 'ENOENT') {
                 res.status(500).send(err.message);
             }
         });
