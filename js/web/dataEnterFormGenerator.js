@@ -39,6 +39,9 @@ function initializeInputFields(context){
     if(document.getElementById("new_importance"))
         document.getElementById("new_importance").value = 0;
 
+    if(document.getElementById("new_section"))
+        document.getElementById("new_section").value = "unassigned";
+
     // set contributor's name from local
     if(document.getElementById("new_contributor") && hasLocalUserName())
         document.getElementById("new_contributor").value = getValueFromLS();

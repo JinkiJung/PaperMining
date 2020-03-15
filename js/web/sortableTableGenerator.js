@@ -21,7 +21,12 @@ function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
     if(isEditable === true)
         generateDataEnterForm(context, headers);
 
-    result += generateTableBody(context, jsonData, headers, editables);
+    if(jsonData){
+        if(jsonData.length > 0)
+            result += generateTableBody(context, jsonData, headers, editables);
+        else
+            result += generateDummyBody(headers, isEditable);
+    }
     // existing data
     //result += generateDataRows(type,projectName, data, headers);
     return result + "</table>";
@@ -269,6 +274,13 @@ function sortTable(numElement, skipInterval, priorityMap) {
         reverseTableRows(skipInterval);
     }
 
+}
+
+function generateDummyBody(headers, isEditable) {
+    var message = "<br>No data to show.<br><br>";
+    if(isEditable)
+        message += " Click 'Add new' button to add the first data!<br><br>";
+    return "<tr class=\"new_entry\"><td colspan='"+headers.length+"'><center>"+message+"</center></td></tr>";
 }
 
 function capitalizeFirstLetter(string) {
