@@ -15,6 +15,8 @@ function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
     result += "<table id=\"sortableTable\"><tr "+trStyle+">";
     var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
     var editables = getEditablesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
+
+    sortingState = Array(headers.length).fill(false);
     // header
     result += generateTableHeader(headers);
     // new entry
@@ -25,7 +27,7 @@ function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
         if(jsonData.length > 0)
             result += generateTableBody(context, jsonData, headers, editables);
         else
-            result += generateDummyBody(headers, isEditable);
+            result += generateDummyBody(context, headers, isEditable);
     }
     // existing data
     //result += generateDataRows(type,projectName, data, headers);
@@ -59,7 +61,7 @@ function getThoughtFromPaperID(jsonThoughtData, paperID){
 function generateTableHeader(headers){
     var result = "";
     for( var k=0; k<headers.length ; k++){
-        result+= "<td class=table_header><button class=\"tip\" onclick=\"sortTable("+k+",3)\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+headers[k]+"</span></button></td>";
+        result+= "<td class=table_header><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+headers[k]+"</span></button></td>";
     }
     result += "</tr>";
     return result;
@@ -159,7 +161,6 @@ function callGetToRemove(url){
     var r = confirm("Do you want to remove it?");
     if (r === true) {
         $.get( url, function( data ) {
-            alert( "The data has removed." );
             location.reload();
             ////////////////// TO DO: refresh /////////////////////
             //$("#dataTable").load(window.location.href+"#dataTable" );
@@ -186,7 +187,7 @@ function generateRow(context, jsonDatum, key, editables) {
 function generateTableBody(context, jsonData, keys, editables){
     var result = "";
     for(var t=0; t < jsonData.length; t++) {
-        result += "<tr class=\"new_entry\">";
+        result += "<tr class=\"entry\">";
         for (var k = 0; k < keys.length; k++) {
             result += generateRow(context, jsonData[t], keys[k], editables);
         }
@@ -199,88 +200,15 @@ function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
 
-function reverseTableRows(skipInterval) {
-    var table = document.getElementById("sortableTable"),
-        newTbody = document.createElement('tbody'),
-        oldTbody = table.tBodies[0],
-        rows = table.rows,
-        i = rows.length - 1;
-    for(var i=0; i<skipInterval ; i++){
-        newTbody.appendChild(rows[0]); // header
-    }
-    for (i = rows.length-1; i >= 0; i-=1) {
-
-        //console.log(rows[i+1]);
-        newTbody.appendChild(rows[i]);
-    }
-    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-}
-
-function getContentOnly(data){
-    var elements = String(data.outerHTML).split(/<|>/);
-    for(var i=0; i<elements.length ; i++){
-        if(elements[i].length!=0 && elements[i]!="td" && !elements[i].includes("Section") && !elements[i].includes("contenteditable") && !elements[i].includes("class="))
-            return String(elements[i]);
-    }
-}
-
-function invalidateSortingState(){
-    for(var t=0; t<sortingState.length ; t++)
-        sortingState[t]=0;
-}
-
-function sortTable(numElement, skipInterval, priorityMap) {
-    var priorityMap = labelPriorityMaps[numElement];
-    var table, rows, switching, i, x, y, shouldSwitch;
-    table = document.getElementById("sortableTable");
-    switching = true;
-    /*Make a loop that will continue until
-    no switching has been done:*/
-    if(sortingState[numElement]==0){ //no sorted state
-
-        while (switching) {
-            //start by saying: no switching is done:
-            switching = false;
-            rows = table.rows;
-            /*Loop through all table rows (except the
-            first, which contains table headers):*/
-            for (i = skipInterval; i < (rows.length - 1); i+=1) {
-                if(hasClass(rows[i],"new_entry"))
-                    continue;
-                //start by saying there should be no switching:
-                shouldSwitch = false;
-                /*Get the two elements you want to compare,
-                one from current row and one from the next:*/
-                x = getContentOnly(rows[i].getElementsByTagName("TD")[numElement]);
-                y = getContentOnly(rows[i + 1].getElementsByTagName("TD")[numElement]);
-                //check if the two rows should switch place:
-                if(compareWithContext(x.toLowerCase(),y.toLowerCase(),priorityMap)){
-                    shouldSwitch=true;
-                    break;
-                }
-            }
-            if (shouldSwitch) {
-                /*If a switch has been marked, make the switch
-                and mark that a switch has been done:*/
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                switching = true;
-            }
-        }
-        invalidateSortingState();
-
-        sortingState[numElement]=1;
-    }
-    else if(sortingState[numElement]>0){ //no sorted state
-        reverseTableRows(skipInterval);
-    }
-
-}
-
-function generateDummyBody(headers, isEditable) {
+function generateDummyBody(context, headers, isEditable) {
     var message = "<br>No data to show.<br><br>";
-    if(isEditable)
-        message += " Click 'Add new' button to add the first data!<br><br>";
-    return "<tr class=\"new_entry\"><td colspan='"+headers.length+"'><center>"+message+"</center></td></tr>";
+    if(context === 'carve')
+        message += " You need to add your thoughts in the <b>Mine</b> page of a paper. <br><br> Go to the <a href='./table.html?context=collect'><b>Collect</b></a> page and click 'id' of the paper!<br><br>";
+    else if(context === 'plant')
+        message += " You need to select the thoughts to be planted in the <a href='./table.html?context=carve'><b>Carve</b></a> page by clicking 'ToPlant' checkbox!<br><br>";
+    else if(isEditable)
+        message += " Click 'Add new' button to add the first "+contextToDefinition(context)+"!<br><br>";
+    return "<tr class=\"entry\"><td colspan='"+headers.length+"'><center>"+message+"</center></td></tr>";
 }
 
 function capitalizeFirstLetter(string) {
@@ -323,4 +251,73 @@ function getVisiblesByContext(context, jsonData, isEditable){
     if(isEditable === true)
         keys.push('delete');
     return keys;
+}
+
+
+function sortTable(numElement) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.getElementById("sortableTable");
+    switching = true;
+    /*Make a loop that will continue until
+    no switching has been done:*/
+
+    while (switching) {
+        //start by saying: no switching is done:
+        switching = false;
+        /*Loop through all table rows (except the
+        first, which contains table headers):*/
+        rows = table.rows;
+        console.log(rows);
+        for (i = 0; i < (rows.length - 1); i+=1) {
+            if(hasClass(rows[i],'entry') === false)
+                continue;
+            //start by saying there should be no switching:
+            shouldSwitch = false;
+            /*Get the two elements you want to compare,
+            one from current row and one from the next:*/
+            x = getPriority(rows[i].getElementsByTagName("TD")[numElement].children[0]);
+            y = getPriority(rows[i + 1].getElementsByTagName("TD")[numElement].children[0]);
+            console.log(x);
+            console.log(y);
+            //check if the two rows should switch place:
+            if(x!==y && compareWithContext(x,y) ^ sortingState[numElement]){
+                shouldSwitch=true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            /*If a switch has been marked, make the switch
+            and mark that a switch has been done:*/
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
+    }
+
+    console.log(sortingState[numElement]);
+    sortingState[numElement] = !sortingState[numElement];
+    console.log(sortingState[numElement]);
+}
+
+function compareWithContext(x, y){
+    console.log(typeof x);
+    if(typeof x === 'integer' || typeof x === 'number')
+        return x > y;
+    else{
+        console.log(x.toLowerCase().localeCompare(y.toLowerCase()));
+        return x.toLowerCase().localeCompare(y.toLowerCase()) > 0;
+    }
+
+    console.log(x);
+    console.log(y);
+    
+}
+
+function getPriority(datum){
+    var attributeType = datum.dataset.attributeType;
+    if(attributeType === "toPlant" || attributeType === "written")
+        return datum.checked;
+    else if(attributeType === "importance" || attributeType === "order")
+        return parseFloat(datum.innerHTML);
+    else
+        return datum.innerHTML;
 }

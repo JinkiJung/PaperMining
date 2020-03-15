@@ -21,7 +21,8 @@ module.exports = {
             var jsonData = JSON.parse(rawData);
             var index = getIndex(jsonData[context+'s'], jsonDatum.id);
             if(index>=0){
-                jsonData[context+'s'][index] = jsonDatum;
+                //jsonData[context+'s'][index] = jsonDatum;
+                updateAttribute(jsonData[context+'s'][index], jsonDatum);
                 fileManager.write("data", "json", "", JSON.stringify(jsonData));
             }
         });
@@ -35,6 +36,13 @@ module.exports = {
             jsonData[context+'s'] = updatedJsonData;
             fileManager.write("data", "json", "", JSON.stringify(jsonData));
         });
+    }
+}
+
+function updateAttribute(jsonDatumInDB, jsonDatum) {
+    for(var key in jsonDatum) {
+        if(jsonDatumInDB[key])
+            jsonDatumInDB[key] = jsonDatum[key];
     }
 }
 
