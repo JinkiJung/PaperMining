@@ -27,6 +27,10 @@ The project was implemented as a prototype, [SharePaper](https://github.com/Virt
 ## Metadata license
 PaperMining asserts no claims of ownership to individual items of paper metadata and associated files. 
 
+## Dependency
+- AJV: https://ajv.js.org/
+- TableDnD: http://isocra.github.io/TableDnD/
+
 ## Contributor
  - [Jinki Jung](https://github.com/jinkijung)
 
