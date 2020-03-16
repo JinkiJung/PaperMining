@@ -361,7 +361,27 @@
         },
         "title": {
           "type": "string",
-          "description" : "Title of a paper",
+          "description" : "Title of the paper",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["collect"]
+          }
+        },
+        "tag": {
+          "type": "string",
+          "description" : "Tag/keyword related to the paper",
           "_visible": {
             "type": "array",
             "items":{
@@ -381,7 +401,7 @@
         },
         "bibtex": {
           "type": "string",
-          "description" : "Bibtex of a paper",
+          "description" : "Bibtex of the paper",
           "_visible": {
             "type": "array",
             "items":{
