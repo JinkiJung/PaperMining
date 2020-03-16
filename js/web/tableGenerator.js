@@ -104,7 +104,7 @@ function filterForPlant(jsonData){
 
 function fetchBibtexByFocusOut(){
     $('#new_title').focusout(function() {
-        console.log($(this).val());
+        //console.log($(this).val());
     });
 }
 

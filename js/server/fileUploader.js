@@ -3,6 +3,7 @@ const path	=	require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 const baseDir = './resources/pdf/';
+const fileManager = require('../file/fileManager');
 var paperTitle = "aPaper";
 //
 module.exports = function(app)
@@ -46,23 +47,7 @@ function getWritableName(fileName){
 function checkUploadPath(req, res, next) {
     if(fs.existsSync(baseDir))
         next();
-    /*
-    if(folderCreator.createFolder(baseDir)>0)
+
+    if(fileManager.createFolder(baseDir)>0)
         next();
-    var uploadPath = baseDir;
-       fs.exists(uploadPath, function(exists) {
-          if(exists) {
-            next();
-          }
-          else {
-            fs.mkdir(uploadPath, function(err) {
-              if(err) {
-                console.log('Error in folder creation');
-                next();
-              }
-              next();
-            })
-          }
-       })
-       */
 }
