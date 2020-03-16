@@ -36,7 +36,7 @@ module.exports = {
             }
             console.log("The file saved: "+fullFilePath);
             if(res && !res.finished)
-                res.write("The file saved: "+fullFilePath);
+                res.send("The file saved: "+fullFilePath);
         });
     },
     update: function (fileName, fileExtension, folderName, content, res = undefined){
@@ -59,7 +59,7 @@ module.exports = {
                         }
                         console.log("The file updated: "+fullFilePath);
                         if(res && !res.finished)
-                            res.write("The file updated: "+fullFilePath);
+                            res.send("The file updated: "+fullFilePath);
                     });
                 } catch(err) {
                     res.status(500).send(err.message);
@@ -88,7 +88,7 @@ module.exports = {
                 fs.unlinkSync(fullFilePath); //file removed
                 console.log("The file removed: "+fullFilePath);
                 if(res && !res.finished)
-                    res.write("The file removed: "+fullFilePath);
+                    res.send("The file removed: "+fullFilePath);
             } catch(err) {
                 res.status(500).send(err.message);
             }

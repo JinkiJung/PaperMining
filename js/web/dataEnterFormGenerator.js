@@ -159,24 +159,6 @@ function validateDatum(context, schema, data, command = undefined) {
     return true;
 }
 
-function registerDatum(context, jsonDatum){
-    sendJsonDatum(context, jsonDatum);
-    /*
-    $.ajax({
-        type: "GET",
-        url: "../resources/json/data.json",
-        dataType: "text",
-        success: function (data) {
-            var jsonData = JSON.parse(data);
-            sendJsonDatum(context, jsonDatum);
-        },
-        fail: function (data) {
-            alert("Error in loading json schema.");
-        }
-    });
-     */
-}
-
 function sendJsonDatum(context, data, command){
     // construct an HTTP request
     var xhr = new XMLHttpRequest();

@@ -172,7 +172,7 @@ function validateAndStore(dataType, req, res){
                 else{
                     fileManager.write(fileName, "json", dataType+"s", JSON.stringify(req.body),res);
                     dbManager.appendDatumToDB(dataType, req.body);
-                    res.send("OK");
+                    //res.end("OK");
                 }
             });
         } catch(e) {
