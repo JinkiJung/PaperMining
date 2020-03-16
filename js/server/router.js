@@ -43,7 +43,7 @@ module.exports = function(app){
             if(req.query['content'] && req.query['content'].length > 0){
                 var jsonDatum = {};
                 jsonDatum[req.params.type] = req.query['content'];
-                dbManager.updateMetaData(req.params.type, jsonDatum);
+                dbManager.updateMetaData(jsonDatum);
                 res.end("OK");
             }
 
