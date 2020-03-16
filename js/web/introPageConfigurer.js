@@ -63,7 +63,7 @@ function checkElement(id, context){
 // load project file
 $.ajax({
     type: "GET",
-    url: "../resources/json/data.json",
+    url: "./resources/json/data.json",
     dataType: "text",
     success: function (data) {
         var jsonData = JSON.parse(data);
