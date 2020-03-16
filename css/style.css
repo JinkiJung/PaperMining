@@ -299,6 +299,11 @@ tbody .myDragClass{
     box-shadow: 3px -3px 3px rgb(138, 138, 138);
 }
 
+.with_border {
+    padding:0px; border:1px;
+    border-color: black;
+}
+
 input[type=button] {
     font-family: "Staatliches", sans-serif;
     color: white;

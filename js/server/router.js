@@ -4,6 +4,7 @@ const dbManager = require('../db/DBManager');
 const express = require('express');
 const validator = require('../validator/validatorForServer');
 const fs = require('fs');
+const paperMiningMetadata = ["title", "abstract"];
 const paperMiningTypes = ["thought", "section", "paper"];
 const bibGenerator = require('../bibtex/title2bibtex');
 
@@ -31,9 +32,25 @@ module.exports = function(app){
 
     app.get('/getBibtex', (req, res) => {
         if(req.query['title'] && req.query['title'].length>0)
-            bibGenerator.title2bibtex(req.query.title, res);
+            bibGenerator.title2bibtex(req.query['title'], res);
         else
             res.status(500).send("request does not have the 'title' parameter.");
+    });
+
+    app.get('/register/:type', express.json({type: '*/*'}), (req, res) => {
+        ///////////////////////////////// TO DO: metadata type to json schema ///////////////////////////////////////////////
+        if(paperMiningMetadata.includes(req.params.type))
+            if(req.query['content'] && req.query['content'].length > 0){
+                var jsonDatum = {};
+                jsonDatum[req.params.type] = req.query['content'];
+                dbManager.updateMetaData(req.params.type, jsonDatum);
+                res.end("OK");
+            }
+
+            else
+                res.status(500).send("Content error: the request does not content.");
+        else
+            res.status(500).send("Type error: '"+req.params.type+"' does not supported.");
     });
 }
 

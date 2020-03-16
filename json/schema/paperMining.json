@@ -4,14 +4,13 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://github.com/JinkiJung/PaperMining/blob/master/json/schema/paperMining.json",
   "properties": {
-    "projectName": {
-      "title": "Project name",
-      "type": "string",
-      "options": {
-        "inputAttributes": {
-          "placeholder": "Enter project name"
-        }
-      }
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "abstract": {
+      "title": "Abstract",
+      "type": "string"
     },
     "sections": {
       "title": "Section list",

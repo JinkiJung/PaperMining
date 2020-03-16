@@ -9,6 +9,15 @@ function makeUpdate(domElement){
     }
 }
 
+function sendMetadataUpdate(type, content){
+    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/register/"+type+"?content="+content;
+    $.get( url, function( data ) {
+        location.reload();
+        ////////////////// TO DO: refresh /////////////////////
+        //$("#dataTable").load(window.location.href+"#dataTable" );
+    });
+}
+
 function convertToJson(context, id, elements){
     var jsonDatum = {"id": id};
     for(var i=0; i<elements.length ; i++){

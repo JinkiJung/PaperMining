@@ -25,10 +25,10 @@ $(document).ready(function() {
 
                     document.getElementById("title").innerHTML = "<center><H3>"+getTitle(jsonData, paperID)+"</H3></center>";
                     if(context === 'mine'){
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], !accessedFromGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], !accessedFromGitHub());
                     }
                     else{
-                        document.getElementById("dataTable").innerHTML = generateTable(context,title, jsonData[contextToData(context)], jsonSchema["definitions"], !accessedFromGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context, jsonData[contextToData(context)], jsonSchema["definitions"], !accessedFromGitHub());
                     }
 
                     if(!accessedFromGitHub()){

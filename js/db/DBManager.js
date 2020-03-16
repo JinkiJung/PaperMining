@@ -35,6 +35,22 @@ module.exports = {
             jsonData[context+'s'] = updatedJsonData;
             fileManager.write("data", "json", "", JSON.stringify(jsonData));
         });
+    },
+    updateMetaData: function(jsonMetadata){
+        fs.readFile(dbFullPath, function read(err, rawData) {
+            if (err) {
+                throw err;
+            }
+            var jsonData = JSON.parse(rawData);
+            updateMetadata(jsonData, jsonMetadata);
+            fileManager.write("data", "json", "", JSON.stringify(jsonData));
+        });
+    }
+}
+
+function updateMetadata(jsonData, jsonDatum) {
+    for(var key in jsonDatum) {
+        jsonData[key] = jsonDatum[key];
     }
 }
 

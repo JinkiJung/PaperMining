@@ -2,10 +2,10 @@ function getTitle(jsonData, paperID){
     if(paperID !== 'null')
         return "[Mining]<br>"+getTitleFromPaperID(jsonData["papers"], paperID);
     else
-        return jsonData["projectName"]
+        return jsonData["title"]
 }
 
-function generateTable(context, projectName, jsonData, jsonSchema, isEditable){
+function generateTable(context, jsonData, jsonSchema, isEditable){
     var result = "";
     var trStyle = "";
     trStyle = "class=\"nodrop nodrag\"";
