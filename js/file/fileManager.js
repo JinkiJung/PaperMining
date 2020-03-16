@@ -23,7 +23,7 @@ module.exports = {
         });
     },
     write: function (fileName, fileExtension, folderName, content, res = undefined){
-        module.exports.createFolder(resourceDir + fileExtension );
+        module.exports.createFolder(resourceDir + fileExtension + "/" +folderName );
         var fileNameRevised= getWritableName(fileName);
         if(folderName && folderName.length>0)
             folderName += "/";
@@ -35,8 +35,8 @@ module.exports = {
                 return console.log(err);
             }
             console.log("The file saved: "+fullFilePath);
-            if(res)
-                res.send("The file saved: "+fullFilePath);
+            if(res && !res.finished)
+                res.write("The file saved: "+fullFilePath);
         });
     },
     update: function (fileName, fileExtension, folderName, content, res = undefined){
@@ -58,8 +58,8 @@ module.exports = {
                             return console.log(err);
                         }
                         console.log("The file updated: "+fullFilePath);
-                        if(res)
-                            res.send("The file updated: "+fullFilePath);
+                        if(res && !res.finished)
+                            res.write("The file updated: "+fullFilePath);
                     });
                 } catch(err) {
                     res.status(500).send(err.message);
@@ -87,6 +87,8 @@ module.exports = {
             try {
                 fs.unlinkSync(fullFilePath); //file removed
                 console.log("The file removed: "+fullFilePath);
+                if(res && !res.finished)
+                    res.write("The file removed: "+fullFilePath);
             } catch(err) {
                 res.status(500).send(err.message);
             }
