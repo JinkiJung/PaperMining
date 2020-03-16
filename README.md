@@ -17,7 +17,7 @@ The project was implemented as a prototype, [SharePaper](https://github.com/Virt
 Add the template repository as a remote.
 
 ```
-git remote add template [URL of the template repo]
+git remote add template https://github.com/JinkiJung/PaperMining.git
 ```
 
 Then catch up the updates by running,
@@ -28,8 +28,10 @@ git fetch --all
 By creating your repository from template, your repository will be an independent one which makes error when you try to merge it with the template. The command has been taught not to allow this by default, with an escape hatch *--allow-unrelated-histories* option to be used in a rare event that merges histories of two projects that started their lives independently.
 
 ```
-git merge template/[branch to merge] --allow-unrelated-histories
+git merge template/master --allow-unrelated-histories
 ```
+
+You can get the up-to-date state of the repository after resolving conflicts from the merge.
 
 ## Required
 - Node.js (required to execute a web server and update CSV files locally)
