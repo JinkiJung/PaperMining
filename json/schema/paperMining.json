@@ -146,7 +146,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["carve"]
+            "default": ["carve", "plant"]
           },
           "_editable": {
             "type": "array",
