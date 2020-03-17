@@ -50,6 +50,8 @@ function doesHaveUserName(){
 }
 
 function checkElement(id, context){
+    if(accessedFromGitHub())
+        return true;
     var content = document.getElementById(id).textContent;
     if(content.length ===0){
         alert("You must enter "+context+".");
@@ -60,14 +62,24 @@ function checkElement(id, context){
         return true;
 }
 
-// load project file
-$.ajax({
-    type: "GET",
-    url: "./resources/json/data.json",
-    dataType: "text",
-    success: function (data) {
-        var jsonData = JSON.parse(data);
-        document.getElementById("project_title").innerHTML = jsonData["title"];
-        document.getElementById("project_abstract").innerHTML = jsonData["abstract"];
-    }
-});
+function accessedFromGitHub(){
+    return window.location.href.toLowerCase().includes("github");
+}
+
+if(accessedFromGitHub()){
+    document.getElementById("project_title").innerHTML = "PaperMining blank project";
+    document.getElementById("project_abstract").innerHTML = "This example is made to give you a better understanding how it works."
+}
+else{
+    // load project file
+    $.ajax({
+        type: "GET",
+        url: "./resources/json/data.json",
+        dataType: "text",
+        success: function (data) {
+            var jsonData = JSON.parse(data);
+            document.getElementById("project_title").innerHTML = jsonData["title"];
+            document.getElementById("project_abstract").innerHTML = jsonData["abstract"];
+        }
+    });
+}
