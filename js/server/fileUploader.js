@@ -34,7 +34,7 @@ module.exports = function(app)
                 return res.status(500).end("Error uploading file.");
             }
             console.log("PDF file stored: " + baseDir + getWritableName(paperTitle) + '.pdf');
-            res.end(baseDir + getWritableName(paperTitle) + '.pdf');
+            res.status(200).send(baseDir + getWritableName(paperTitle) + '.pdf');
         });
     });
 }

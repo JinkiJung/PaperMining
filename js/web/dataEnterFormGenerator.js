@@ -13,6 +13,8 @@ function generateDataEnterForm(context, headers){
     // When the user clicks the button, open the modal
     btn.onclick = function() {
         modal.style.display = "block";
+        if(getURLParameter("context")!==undefined)
+            initializeInputFields(getURLParameter("context"));
     }
 
     // When the user clicks on <span> (x), close the modal
@@ -248,7 +250,7 @@ function setPDFFilePath(text){
 function passTitle(){
     var title = getTitleFromTextArea();
     if(title && title.length > 0){
-        window.open('http://'+defaultConfig.web.url+':'+defaultConfig.web.port+'/uploadPDF?title='+title,'pagename','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable,height=260,width=370');
+        window.open('http://'+defaultConfig.web.url+':'+defaultConfig.web.port+'/uploadPDF?title='+title,'pagename','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable,height=240,width=500');
         //return true;
     }
     else
