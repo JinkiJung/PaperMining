@@ -28,7 +28,7 @@ $(document).ready(function() {
                         document.getElementById("dataTable").innerHTML = generateTable(context, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], !accessedFromGitHub());
                     }
                     else{
-                        document.getElementById("dataTable").innerHTML = generateTable(context, jsonData[contextToData(context)], jsonSchema["definitions"], !accessedFromGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context, getSafeJsonData(jsonData[contextToData(context)]), jsonSchema["definitions"], !accessedFromGitHub());
                     }
 
                     if(!accessedFromGitHub()){
@@ -51,6 +51,13 @@ $(document).ready(function() {
         }
     });
 });
+
+function getSafeJsonData(jsonData){
+    if(jsonData=== undefined)
+        return [];
+    else
+        return jsonData;
+}
 
 function getJsonDatum(id, order){
     return {"id": id, "order": order};
