@@ -40,26 +40,32 @@ function getTitleFromPaperID(jsonData, paperID){
 
 function getPaperFromPaperID(jsonPaperData, paperID){
     var items = [];
-    for(var i=0; i<jsonPaperData.length ; i++){
-        if(jsonPaperData[i]["id"] === paperID)
-            items.push(jsonPaperData[i]);
+    if(jsonPaperData){
+        for(var i=0; i<jsonPaperData.length ; i++){
+            if(jsonPaperData[i]["id"] === paperID)
+                items.push(jsonPaperData[i]);
+        }
     }
     return items;
 }
 
 function getThoughtFromPaperID(jsonThoughtData, paperID){
     var items = [];
-    for(var i=0; i<jsonThoughtData.length ; i++){
-        if(jsonThoughtData[i]["paperID"] === paperID)
-            items.push(jsonThoughtData[i]);
+    if(jsonThoughtData){
+        for(var i=0; i<jsonThoughtData.length ; i++){
+            if(jsonThoughtData[i]["paperID"] === paperID)
+                items.push(jsonThoughtData[i]);
+        }
     }
     return items;
 }
 
 function generateTableHeader(headers, descriptions){
     var result = "";
-    for( var k=0; k<headers.length ; k++){
-        result+= "<td class='table_header'><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+descriptions[k]+"</span></button></td>";
+    if(headers){
+        for( var k=0; k<headers.length ; k++){
+            result+= "<td class='table_header'><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+descriptions[k]+"</span></button></td>";
+        }
     }
     result += "</tr>";
     return result;
