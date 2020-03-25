@@ -46,7 +46,7 @@ function initializeInputFields(context){
 
     // set contributor's name from local
     if(document.getElementById("new_contributor") && hasLocalUserName())
-        document.getElementById("new_contributor").value = getValueFromLS();
+        document.getElementById("new_contributor").value = getContributorFromLS();
 }
 
 function generateNewEntry(context, header){
@@ -83,7 +83,7 @@ function createPDFUploadPopup(rowId){
 function generateNewEntryCore(context, header){
     var result = "<table>";
     //*
-    for(var k=0; k<header.length-1; k++){
+    for(var k=0; k<header.length; k++){
         result +="<tr>";
         var textValue="";
 
@@ -108,7 +108,7 @@ function addNewData(context, paperID){
 }
 
 function hasLocalUserName(){
-    var userName = getValueFromLS();
+    var userName = getContributorFromLS();
     if(userName && userName.length > 0)
         return true;
     else
@@ -127,7 +127,7 @@ function collectDatum(context, paperID) {
         //if(fieldNames[i].value){
             var attributeName = fieldNames[i].id.substring(4);
             if(attributeName === 'comment')
-                newJsonDatum[attributeName] = {"content":fieldNames[i].value, "commenter":getValueFromLS(), "timestamp":"time"};
+                newJsonDatum[attributeName] = {"content":fieldNames[i].value, "commenter":getContributorFromLS(), "timestamp":"time"};
             // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else if(attributeName === 'importance')
                 newJsonDatum[attributeName] = parseFloat(fieldNames[i].value);
@@ -141,13 +141,21 @@ function collectDatum(context, paperID) {
     // add order attribute
     newJsonDatum['order'] = -1;
     newJsonDatum['written'] = false;
-    if(context === 'mine'){
+    if(context === 'collect'){
+        newJsonDatum['timestamp'] = ""; // dummy timestamp
+        newJsonDatum['contributor'] = getContributorFromLS();
+    }
+    else if(context === 'mine'){
         if(paperID)
             newJsonDatum['paperID'] = paperID;
         if(newJsonDatum['importance'] === "")
             newJsonDatum['importance'] = 0;
         if(newJsonDatum['toPlant'] === "")
             newJsonDatum['toPlant'] = false;
+        if(newJsonDatum['comment']){
+            newJsonDatum['comment']['commenter'] = getContributorFromLS();
+            newJsonDatum['comment']['timestamp'] = ""; // dummy timestamp
+        }
     }
     return newJsonDatum;
 }

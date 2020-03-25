@@ -24,5 +24,5 @@ function convertLocalDateToUTCDate(date) {
         zeroPad(newDate.getMinutes(),10),
         zeroPad(newDate.getSeconds(),10)
     ];
-    return datevalues.join('/');
+    return datevalues.join(':');
 }

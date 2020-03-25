@@ -1,6 +1,6 @@
 function getTitle(jsonData, paperID){
     if(paperID !== 'null')
-        return "[Mining]<br>"+getTitleFromPaperID(jsonData["papers"], paperID);
+        return "[Mining by "+getContributorFromLS()+"]<br>"+getTitleFromPaperID(jsonData["papers"], paperID);
     else
         return jsonData["title"]
 }
@@ -19,7 +19,7 @@ function generateTable(context, jsonData, jsonSchema, isEditable){
     result += generateTableHeader(headers, descriptions);
     // new entry
     if(isEditable === true)
-        generateDataEnterForm(context, headers);
+        generateDataEnterForm(context, editables);
 
     if(jsonData){
         if(jsonData.length > 0)
@@ -91,8 +91,7 @@ function generateContent(obj, key){
 }
 
 function generateForm(id, obj, key, editable = true){
-    var htmlElement = "p";
-    var rowId = generateRowID(id, key);
+    var rowId = generateCellID(id, key);
     var rowContent = generateContent(obj, key);
     if(obj === undefined && key){ // for new entry
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,32 +175,48 @@ function callGetToRemove(url){
     }
 }
 
-function generateRowID(id, key){
+function generateCellID(id, key){
     if(id === "new")
         return id + "_" + key;
     else
         return id + "_" + key + generateShortRand();
 }
 
-function generateRow(context, jsonDatum, key, editables) {
+function generateCell(context, jsonDatum, key, editables) {
     var id = jsonDatum['id'];
     if(key === 'delete')
         return generateDeleteButton(context, id);
     if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
         return "";
-    return generateForm(id, jsonDatum[key], key, editables.includes(key));
+    var editable = (context ==='mine' && key === 'id') ? false : editables.includes(key);
+    return generateForm(id, jsonDatum[key], key, editable);
 }
 
 function generateTableBody(context, jsonData, keys, editables){
     var result = "";
     for(var t=0; t < jsonData.length; t++) {
-        result += "<tr class=\"entry\">";
-        for (var k = 0; k < keys.length; k++) {
-            result += generateRow(context, jsonData[t], keys[k], editables);
-        }
-        result += "</tr>";
+        result += generateRow(context, jsonData[t], keys, editables);
     }
     return result;
+}
+
+function generateRow(context, jsonDatum, keys, editables){
+    if(isNotRelated(context, jsonDatum))
+        return "";
+    var result = "<tr class=\"entry\">";
+    for (var k = 0; k < keys.length; k++) {
+        result += generateCell(context, jsonDatum, keys[k], editables);
+    }
+    return result + "</tr>";
+}
+
+function isNotRelated(context, jsonDatum){
+    if(context === "mine"){
+        if(jsonDatum && jsonDatum['comment']['commenter'])
+            if(jsonDatum['comment']['commenter'] !== getContributorFromLS())
+                return true;
+    }
+    return false;
 }
 
 function hasClass(element, cls) {
@@ -318,13 +333,9 @@ function compareWithContext(x, y){
     if(typeof x === 'integer' || typeof x === 'number')
         return x > y;
     else{
-        console.log(x.toLowerCase().localeCompare(y.toLowerCase()));
         return x.toLowerCase().localeCompare(y.toLowerCase()) > 0;
     }
 
-    console.log(x);
-    console.log(y);
-    
 }
 
 function getPriority(datum){

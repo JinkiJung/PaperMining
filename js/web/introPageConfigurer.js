@@ -1,5 +1,5 @@
 var userEntry = document.getElementById("contributor_local");
-userEntry.innerHTML = ""+getValueFromLS();
+userEntry.innerHTML = ""+getContributorFromLS();
 
 var focused_value = "";
 var focused_id = "";

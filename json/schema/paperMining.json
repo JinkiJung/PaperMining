@@ -133,7 +133,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["mine"]
           }
         },
         "order": {
@@ -228,6 +228,23 @@
             },
             "timestamp": {
               "type": "string"
+            },
+            "reaction": {
+              "type": "object",
+              "properties": {
+                "emoji": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "reactor": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string"
+                }
+              }
             }
           },
           "_visible": {
@@ -278,7 +295,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["mine", "carve"]
+            "default": ["carve"]
           },
           "_editable": {
             "type": "array",
@@ -286,7 +303,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["mine","carve"]
+            "default": ["carve"]
           }
         },
         "written": {
@@ -477,7 +494,27 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
+            "default": []
+          }
+        },
+        "timestamp": {
+          "type": "string",
+          "description" : "Timestamp when paper added",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
             "default": ["collect"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": []
           }
         }
       }

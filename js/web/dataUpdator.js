@@ -24,7 +24,7 @@ function convertToJson(context, id, elements){
         var attributeName = elements[i].dataset.attributeType;
         var value = (elements[i].type === 'checkbox') ? elements[i].checked : elements[i].innerHTML;
         if(attributeName === 'comment')
-            jsonDatum[attributeName] = {"content":value, "commenter":getValueFromLS(), "timestamp":"time"};
+            jsonDatum[attributeName] = {"content":value, "commenter":getContributorFromLS(), "timestamp":"time"};
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         else if(attributeName === 'importance')
             jsonDatum[attributeName] = parseFloat(value);

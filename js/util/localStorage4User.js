@@ -1,11 +1,11 @@
-function setValueToLS(value){
+function setContributorToLS(value){
     if(typeof(Storage)!=="undefined")
     {
         localStorage.setItem("contributor_local" , value);
     }
 }
 
-function getValueFromLS()
+function getContributorFromLS()
 {
     var value = localStorage.getItem('contributor_local');
     if(value==undefined || value == null)
@@ -15,8 +15,8 @@ function getValueFromLS()
     }
 }
 
-function saveUserName(id){
-    var userEntry = document.getElementById(id);
+function saveUserName(elementId){
+    var userEntry = document.getElementById(elementId);
     var value = userEntry.textContent;
-    setValueToLS(value);
+    setContributorToLS(value);
 }

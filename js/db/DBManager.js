@@ -1,6 +1,7 @@
 const fs = require('fs');
 const fileManager = require('../file/fileManager');
 const dbFullPath = './resources/json/data.json';
+const timestampGenerator = require('../server/timestampGenerator');
 
 module.exports = {
     appendDatumToDB: function (context, jsonDatum) {
@@ -10,6 +11,7 @@ module.exports = {
             }
             var jsonData = JSON.parse(rawData);
             jsonData[context+'s'].push(jsonDatum);
+            setTimestamp(context, jsonDatum);
             fileManager.write("data", "json", "", JSON.stringify(jsonData));
         });
     },
@@ -22,6 +24,7 @@ module.exports = {
             var index = getIndex(jsonData[context+'s'], jsonDatum.id);
             if(index>=0){
                 updateAttribute(context, index, jsonData, jsonDatum);
+                setTimestamp(context, jsonDatum);
                 fileManager.write("data", "json", "", JSON.stringify(jsonData));
             }
         });
@@ -46,6 +49,12 @@ module.exports = {
             fileManager.write("data", "json", "", JSON.stringify(jsonData));
         });
     }
+}
+
+function setTimestamp(context, jsonDatum){
+    if(context === 'paper')
+        jsonDatum['timestamp'] = timestampGenerator.getCurrentTime();
+    return jsonDatum;
 }
 
 function updateMetadata(jsonData, jsonDatum) {
