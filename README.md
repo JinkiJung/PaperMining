@@ -48,8 +48,8 @@ You can get the up-to-date state of the repository after resolving conflicts fro
 PaperMining asserts no claims of ownership to individual items of paper metadata and associated files. 
 
 ## Dependency
-- AJV: https://ajv.js.org/
-- TableDnD: http://isocra.github.io/TableDnD/
+- AJV (for JSON validation): https://ajv.js.org/
+- TableDnD (for sortable table implementation): http://isocra.github.io/TableDnD/
 
 ## Contributor
  - [Jinki Jung](https://github.com/jinkijung)
