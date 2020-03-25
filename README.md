@@ -41,7 +41,7 @@ You can get the up-to-date state of the repository after resolving conflicts fro
 - Move to the repository root folder
 - Execute 'npm install'
 - Execute the server by 'node index.js'
-- Browse 'http://localhost:5000'
+- Browse 'http://localhost:5000' (can be configured in json/conf/config.json)
 - Enjoy!
 
 ## Metadata license
