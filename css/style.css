@@ -320,7 +320,7 @@ input[type=button] {
 
 .home_button{
     width:10%;
-    background: #34675c;
+    background: #617b6c;
 }
 
 .home_button:hover{
@@ -328,9 +328,18 @@ input[type=button] {
     background: black;
 }
 
+.top_button_chosen {
+    width:30%;
+    background: #4fba45;
+}
+
+.top_button_chosen:hover {
+    background: #1a372d;
+}
+
 .top_button {
     width:30%;
-    background: #34675c;
+    background: #396743;
 }
 
 .top_button:hover {
