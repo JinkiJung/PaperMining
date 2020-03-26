@@ -24,7 +24,7 @@ function convertToJson(context, id, elements){
         var attributeName = elements[i].dataset.attributeType;
         var value = (elements[i].type === 'checkbox') ? elements[i].checked : elements[i].innerHTML;
         if(attributeName === 'comment')
-            jsonDatum[attributeName] = {"content":value, "commenter":getContributorFromLS(), "timestamp":"time"};
+            jsonDatum[attributeName] = {"content":value, "commenter":getContributorFromLS(), "timestamp":""};
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         else if(attributeName === 'importance')
             jsonDatum[attributeName] = parseFloat(value);
@@ -32,11 +32,42 @@ function convertToJson(context, id, elements){
             jsonDatum[attributeName] = parseInt(value);
         else if(attributeName === 'toPlant')
             jsonDatum[attributeName] = value;
+        else if(attributeName === 'paperID'){
+            addToPaperIdList(jsonDatum[attributeName], value);
+        }
         // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         else
             jsonDatum[attributeName] = value;
     }
     if(context === 'mine')
-        jsonDatum['paperID'] = getURLParameter("paperID");
+        addToPaperIdList(jsonDatum['paperID'], getURLParameter("paperID"));
     return jsonDatum;
+}
+
+function addToPaperIdList(idArray, idItem){
+    if(idArray && Array.isArray(idArray))
+        idArray.push(idItem);
+    else{
+        idArray = [];
+        idArray.push(idItem);
+    }
+}
+
+function updateOrderAttribute(table){
+    var needToUpdate = [];
+    for(var i =1 ; i< table.rows.length ; i++){
+        var row = table.rows[i];
+        for(var t=0; t<row.childNodes.length ; t++){
+            if (row.childNodes[t].className === "unselectable") {
+                var divElement = row.childNodes[t].children[0];
+                var id = divElement.classList[0];
+                if(divElement.innerHTML != i.toString()){
+                    divElement.innerHTML = i;
+                    needToUpdate.push(getJsonDatum(id, i));
+                }
+                break;
+            }
+        }
+    }
+    return needToUpdate;
 }

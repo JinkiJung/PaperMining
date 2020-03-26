@@ -141,17 +141,19 @@ function collectDatum(context, paperID) {
     // add order attribute
     newJsonDatum['order'] = -1;
     newJsonDatum['written'] = false;
+    newJsonDatum['toPlant'] = false;
     if(context === 'collect'){
         newJsonDatum['timestamp'] = ""; // dummy timestamp
         newJsonDatum['contributor'] = getContributorFromLS();
     }
     else if(context === 'mine'){
-        if(paperID)
-            newJsonDatum['paperID'] = paperID;
+        if(paperID){
+            if(newJsonDatum['paperID']===undefined)
+                newJsonDatum['paperID'] = [];
+            newJsonDatum['paperID'].push(paperID);
+        }
         if(newJsonDatum['importance'] === "")
             newJsonDatum['importance'] = 0;
-        if(newJsonDatum['toPlant'] === "")
-            newJsonDatum['toPlant'] = false;
         if(newJsonDatum['comment']){
             newJsonDatum['comment']['commenter'] = getContributorFromLS();
             newJsonDatum['comment']['timestamp'] = ""; // dummy timestamp

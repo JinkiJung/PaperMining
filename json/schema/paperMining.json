@@ -327,8 +327,11 @@
           }
         },
         "paperID": {
-          "type": "string",
-          "description" : "ID of the related paper",
+          "type": "array",
+          "description" : "ID of the related papers",
+          "items": {
+            "type": "string"
+          },
           "_visible": {
             "type": "array",
             "items":{

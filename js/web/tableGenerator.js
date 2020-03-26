@@ -63,25 +63,6 @@ function getJsonDatum(id, order){
     return {"id": id, "order": order};
 }
 
-function updateOrderAttribute(table){
-    var needToUpdate = [];
-    for(var i =1 ; i< table.rows.length ; i++){
-        var row = table.rows[i];
-        for(var t=0; t<row.childNodes.length ; t++){
-            if (row.childNodes[t].className === "unselectable") {
-                var divElement = row.childNodes[t].children[0];
-                var id = divElement.classList[0];
-                if(divElement.innerHTML != i.toString()){
-                    divElement.innerHTML = i;
-                    needToUpdate.push(getJsonDatum(id, i));
-                }
-                break;
-            }
-        }
-    }
-    return needToUpdate;
-}
-
 function enableDragAndDrop(){
     $("tbody").tableDnD({
         onDragClass: "myDragClass"

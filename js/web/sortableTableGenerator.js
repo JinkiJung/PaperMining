@@ -53,8 +53,10 @@ function getThoughtFromPaperID(jsonThoughtData, paperID){
     var items = [];
     if(jsonThoughtData){
         for(var i=0; i<jsonThoughtData.length ; i++){
-            if(jsonThoughtData[i]["paperID"] === paperID)
-                items.push(jsonThoughtData[i]);
+            for(var t=0; t<jsonThoughtData[i]["paperID"].length ; t++){
+                if(jsonThoughtData[i]["paperID"][t] === paperID)
+                    items.push(jsonThoughtData[i]);
+            }
         }
     }
     return items;
@@ -77,6 +79,8 @@ function generateContent(obj, key){
             return obj['name'];
         else if(key ==='comment')
             return obj['content'];
+        else if(Array.isArray(obj))
+            return obj;
         else
             return "error";
     }
@@ -112,12 +116,15 @@ function generateForm(id, obj, key, editable = true){
         else
             return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
-    else if(key==="id" || key ==='paperID'){
+    else if(key==="id"){
         if(editable)
             return "<td><a href='table.html?context=mine&paperID="+obj+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ rowContent + "</a></td>";
         else
             //return "<td><div id=\"" + rowId + "\" class='unselectable'>"+rowContent+"</div></td>";
             return "<td>"+rowContent+"</td>";
+    }
+    else if(key ==='paperID'){
+        return "<td>"+collectPaperIDs(id, key, rowContent, editable)+"</td>";
     }
     else if(key==="bibtex"){
         if(editable)
@@ -140,6 +147,21 @@ function generateForm(id, obj, key, editable = true){
         else
             return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
+}
+
+function collectPaperIDs(id, key, paperIdArray, editable){
+    var result = "";
+    if(paperIdArray === undefined)
+        return result;
+    for(var i=0; i<paperIdArray.length; i++){
+        if(editable)
+            result += "<a href='table.html?context=mine&paperID="+paperIdArray[i]+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ paperIdArray[i] + "</a>";
+        else
+            result += paperIdArray[i];
+        if(i < paperIdArray.length-1)
+            result += ", ";
+    }
+    return result;
 }
 
 function contextToData(context){
