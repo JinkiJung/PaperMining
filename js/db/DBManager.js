@@ -24,7 +24,6 @@ module.exports = {
             var index = getIndex(jsonData[context+'s'], jsonDatum.id);
             if(index>=0){
                 updateAttribute(context, index, jsonData, jsonDatum);
-                setTimestamp(context, jsonDatum);
                 fileManager.write("data", "json", "", JSON.stringify(jsonData));
             }
         });
@@ -54,7 +53,9 @@ module.exports = {
 function setTimestamp(context, jsonDatum){
     if(context === 'paper')
         jsonDatum['timestamp'] = timestampGenerator.getCurrentTime();
-    return jsonDatum;
+    if(context === 'thought' && jsonDatum['comment']){
+        jsonDatum['comment']['timestamp'] = timestampGenerator.getCurrentTime();
+    }
 }
 
 function updateMetadata(jsonData, jsonDatum) {
