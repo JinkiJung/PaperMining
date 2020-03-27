@@ -4,6 +4,11 @@ function makeUpdate(domElement){
         var data_id = domElement.classList[0];
         var data_row_elements = document.getElementsByClassName(data_id);
         var jsonDatum = convertToJson(context, data_id, data_row_elements);
+
+        // for bibtex collecting
+        if (context === 'plant' && jsonDatum['written'])
+            updateCompletePaperIDs(jsonDatum, jsonDatum['written']);
+
         if(jsonDatum)
             registerValidDatum(context, jsonDatum, "update");
     }

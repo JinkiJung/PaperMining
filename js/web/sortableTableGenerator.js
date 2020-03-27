@@ -20,6 +20,8 @@ function generateTable(context, jsonData, jsonSchema, isEditable){
     // new entry
     if(isEditable === true)
         generateDataEnterForm(context, editables);
+    if(context === 'plant')
+        generateBibtexCopyBtn();
 
     if(jsonData){
         if(jsonData.length > 0)
@@ -211,6 +213,7 @@ function generateCell(context, jsonDatum, key, editables) {
     if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
         return "";
     var editable = (context ==='mine' && key === 'id') ? false : editables.includes(key);
+
     return generateForm(id, jsonDatum[key], key, editable);
 }
 
@@ -226,6 +229,11 @@ function generateRow(context, jsonDatum, keys, editables){
     if(isNotRelated(context, jsonDatum))
         return "";
     var result = "<tr class=\"entry\">";
+
+    // for bibtex collecting
+    if (context === 'plant' && jsonDatum['written'])
+        updateCompletePaperIDs(jsonDatum, jsonDatum['written']);
+
     for (var k = 0; k < keys.length; k++) {
         result += generateCell(context, jsonDatum, keys[k], editables);
     }

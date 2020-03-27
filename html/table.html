@@ -22,6 +22,7 @@
 <script src="../js/web/dataEnterFormGenerator.js"></script>
 <script src="../js/web/dataUpdator.js"></script>
 <script src="../js/web/sortableTableGenerator.js"></script>
+<script src="../js/web/bibtexCollector.js"></script>
 <script src="../js/web/tableGenerator.js"></script>
 
 <!--
@@ -46,7 +47,7 @@
         tempInput.select();
         document.execCommand("copy");
         document.body.removeChild(tempInput);
-        console.log("Copied the text:\r" + value);
+        console.log("Copied the text:\n" + value);
     }
 
     var sortingState = [];
