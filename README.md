@@ -10,6 +10,13 @@ To support this feature, PaperMining provides four modes:
 
 The project was implemented as a prototype, [SharePaper](https://github.com/VirtualityForSafety/SharePaper), and then has been elaborated by [Jinki Jung](https://github.com/jinkijung), 
 
+## Features
+- organized thoughts (or comments) visualization that are captured from multiple papers (Carve mode)
+- configurable thought order (Carve mode)
+- reaction for each thought (Carve mode)
+- checkbox confirmation whether the thought is applied to the manuscript (Plant mode)
+- complete bibtex set exporting (Plant mode)
+
 ## Current setup
 - Remotely (read-only): PaperMining provides a web interface to explore whole contents.
 - Locally: we recommend to setup local servers and commit/push the changes to your repository.
