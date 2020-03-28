@@ -1,14 +1,14 @@
 # PaperMining
-PaperMining is an open-source project of a web-based collaborative paper survey tool including back- and front-end.
-Through this tool, you can utilize a GitHub repository to share the references and thoughts from all collaborators and apply it to the working manuscript easier and clearer.
+PaperMining is an open-source web-based reference management tool for collaborative paper writing.
+Now you can use a GitHub repository for sharing references and corresponding ideas among collaborators and apply it to the article or manuscript easier and clearer.
 
-To support this feature, PaperMining provides four modes:
-- *Collect*: collect papers for survey
-- *Mine*: mine your thought by reading each paper
-- *Carve*: organize and revise all thoughts
-- *Plant*: plant your thoughts to your article or academic journal
+PaperMining provides four separate modes to support sharing thoughts:
+- **Collect**: collect papers for survey
+- **Mine**: mine your thought by reading each paper
+- **Carve**: organize and revise all thoughts
+- **Plant**: plant your thoughts to your article or academic journal
 
-The project was implemented as a prototype, [SharePaper](https://github.com/VirtualityForSafety/SharePaper), and then has been elaborated by [Jinki Jung](https://github.com/jinkijung), 
+The project is previously implemented as a prototype, [SharePaper](https://github.com/VirtualityForSafety/SharePaper), and then has been elaborated by [Jinki Jung](https://github.com/jinkijung).
 
 ## Features
 - organized thoughts (or comments) visualization that are captured from multiple papers - *Carve mode*
@@ -17,12 +17,26 @@ The project was implemented as a prototype, [SharePaper](https://github.com/Virt
 - checkbox confirmation whether the thought is applied to the manuscript - *Plant mode*
 - complete bibtex set exporting - *Plant mode*
 
-## Current setup
-- Remotely (read-only): PaperMining provides a web interface to explore whole contents.
-- Locally: we recommend to setup local servers and commit/push the changes to your repository.
+## How to use
+We encourage you to start by clicking **use this template** button, enables to keep your resources *private*. Read **Metadata license** section.
 
-## Keep update from the PaperMining repository (when you pressed **use this template** button)
-Add the template repository as a remote.
+### Current setup
+- Remotely (read-only): PaperMining provides a web interface to explore whole contents.
+- Locally (read and write): we recommend to setup local server and commit/push the changes to your repository.
+
+### Local server requirement
+- Node.js (required to execute a web server)
+
+### Local server setup
+- Install [Node.js](https://nodejs.org/en/)
+- Move to the repository root folder
+- Execute 'npm install'
+- Execute the server by 'node index.js'
+- Browse 'http://localhost:5000' (can be configured in json/conf/config.json)
+- Enjoy!
+
+### Keep update from the PaperMining repository (when you pressed *use this template* button)
+Add this repository as a remote.
 
 ```
 git remote add template https://github.com/JinkiJung/PaperMining.git
@@ -41,19 +55,8 @@ git merge template/master --allow-unrelated-histories
 
 You can get the up-to-date state of the repository after resolving conflicts from the merge.
 
-## Required
-- Node.js (required to execute a web server and update CSV files locally)
-
-## Execute a local server
-- Install [Node.js](https://nodejs.org/en/)
-- Move to the repository root folder
-- Execute 'npm install'
-- Execute the server by 'node index.js'
-- Browse 'http://localhost:5000' (can be configured in json/conf/config.json)
-- Enjoy!
-
 ## Metadata license
-PaperMining asserts no claims of ownership to individual items of paper metadata and associated files. 
+PaperMining asserts no claims of ownership to individual items of resources, metadata, and associated files. 
 
 ## Dependencies
 - AJV (for JSON validation): https://ajv.js.org/
