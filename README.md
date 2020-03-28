@@ -21,8 +21,8 @@ The project is previously implemented as a prototype, [SharePaper](https://githu
 We encourage you to start by clicking **use this template** button, enables to keep your resources *private*. Read **Metadata license** section.
 
 ### Current setup
-- Remotely (read-only): PaperMining provides a web interface to explore whole contents.
-- Locally (read and write): we recommend to setup local server and commit/push the changes to your repository.
+- Remotely (read-only): the GitHub page of your repository will enable you to explore whole contents.
+- Locally (read and write): we recommend to setup a local server for each contributor to commit/push the changes to your repository.
 
 ### Local server requirement
 - Node.js (required to execute a web server)
