@@ -1,6 +1,7 @@
 # PaperMining
 PaperMining is an open-source web-based reference management tool for collaborative paper writing.
-Now you can use a GitHub repository for sharing references and corresponding ideas among collaborators and apply it to the article or manuscript easier and clearer.
+Now you can use a GitHub repository for sharing references and corresponding ideas and thoughts among collaborators! 🥳
+It also supports confimation of thought application to the article.
 
 PaperMining provides four separate modes to support sharing thoughts:
 - **Collect**: collect papers for survey
