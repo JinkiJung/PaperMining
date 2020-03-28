@@ -47,9 +47,10 @@ You can get the up-to-date state of the repository after resolving conflicts fro
 ## Metadata license
 PaperMining asserts no claims of ownership to individual items of paper metadata and associated files. 
 
-## Dependency
+## Dependencies
 - AJV (for JSON validation): https://ajv.js.org/
 - TableDnD (for sortable table implementation): http://isocra.github.io/TableDnD/
+- emoji-button (for emoji reaction): https://github.com/joeattardi/emoji-button
 
 ## Contributor
  - [Jinki Jung](https://github.com/jinkijung)
