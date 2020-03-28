@@ -1,7 +1,8 @@
 # PaperMining
 PaperMining is an open-source project of a web-based collaborative paper survey tool including back- and front-end.
-Through this tool, you can utilized GitHub as it is for managing references.
-PaperMining has four modes:
+Through this tool, you can utilize a GitHub repository to share the references and thoughts from all collaborators and apply it to the working manuscript easier and clearer.
+
+To support this feature, PaperMining provides four modes:
 - *Collect*: collect papers for survey
 - *Mine*: mine your thought by reading each paper
 - *Carve*: organize and revise all thoughts
