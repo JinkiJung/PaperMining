@@ -126,7 +126,7 @@ function generateForm(id, obj, key, editable = true){
             return "<td>"+rowContent+"</td>";
     }
     else if(key ==='paperID'){
-        return "<td>"+collectPaperIDs(id, key, rowContent, editable)+"</td>";
+        return "<td>"+collectPaperIDs(id, key, rowContent)+"</td>";
     }
     else if(key==="bibtex"){
         if(editable)
@@ -161,15 +161,12 @@ function getComment(obj, itemId, id, key, isEditable){
         return "<div id=\"" + itemId + "\">"+obj["content"]+"</div>";
 }
 
-function collectPaperIDs(id, key, paperIdArray, editable){
+function collectPaperIDs(id, key, paperIdArray){
     var result = "";
     if(paperIdArray === undefined)
         return result;
     for(var i=0; i<paperIdArray.length; i++){
-        if(editable)
-            result += "<a href='table.html?context=mine&paperID="+paperIdArray[i]+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ paperIdArray[i] + "</a>";
-        else
-            result += paperIdArray[i];
+        result += "<a href='table.html?context=mine&paperID="+paperIdArray[i]+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ paperIdArray[i] + "</a>";
         if(i < paperIdArray.length-1)
             result += ", ";
     }

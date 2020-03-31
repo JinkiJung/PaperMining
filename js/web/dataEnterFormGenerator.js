@@ -1,5 +1,5 @@
 function generateDataEnterForm(context, headers){
-    if(context === 'carve' || context === 'plant')
+    if(context === 'plant')
         return ;
     document.getElementById("dataEnterForm").innerHTML = generateNewEntry(context, headers);
     var modal = document.getElementById('myModal');
@@ -50,7 +50,10 @@ function initializeInputFields(context){
 }
 
 function generateNewEntry(context, header){
-    var result = "<button id=\"newEntryBtn\" >Add new</button>";
+    var buttonName = "Add " + contextToDefinition(context);
+    if(context === 'carve')
+        buttonName += " without reference";
+    var result = "<button id=\"newEntryBtn\" >"+buttonName+"</button>";
     result += "<div id=\"myModal\" class=\"modal\">";
     result += "<div class=\"modal-content\">";
     result += "<span class=\"close\">&times;</span>";
@@ -84,6 +87,7 @@ function generateNewEntryCore(context, header){
     var result = "<table>";
     //*
     for(var k=0; k<header.length; k++){
+        console.log(header[k]);
         result +="<tr>";
         var textValue="";
 
@@ -159,6 +163,12 @@ function collectDatum(context, paperID) {
             newJsonDatum['comment']['timestamp'] = ""; // dummy timestamp
         }
     }
+    else if(context === 'carve'){
+        if(newJsonDatum['paperID']===undefined)
+            newJsonDatum['paperID'] = [];
+    }
+    console.log(newJsonDatum['paperID']);
+    alert("!!");
     return newJsonDatum;
 }
 

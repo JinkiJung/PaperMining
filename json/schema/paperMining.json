@@ -133,7 +133,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["mine"]
+            "default": ["mine","carve"]
           }
         },
         "order": {
@@ -345,7 +345,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["carve"]
+            "default": []
           }
         }
       }
