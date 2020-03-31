@@ -87,7 +87,6 @@ function generateNewEntryCore(context, header){
     var result = "<table>";
     //*
     for(var k=0; k<header.length; k++){
-        console.log(header[k]);
         result +="<tr>";
         var textValue="";
 
@@ -167,8 +166,6 @@ function collectDatum(context, paperID) {
         if(newJsonDatum['paperID']===undefined)
             newJsonDatum['paperID'] = [];
     }
-    console.log(newJsonDatum['paperID']);
-    alert("!!");
     return newJsonDatum;
 }
 

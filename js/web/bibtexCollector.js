@@ -15,13 +15,22 @@ function generateBibtexCopyBtn() {
             success: function (data) {
                 var jsonData = JSON.parse(data);
                 var papers = jsonData["papers"];
+                var paperIDsWithEmptyBibtex= [];
                 for(var i=0 ; i< paperIDs.length ; i++){
                     for(var t=0; t<papers.length ; t++){
-                        if(papers[t].id === paperIDs[i])
-                            bibtexes += papers[t].bibtex + "\n";
+                        if(papers[t].id === paperIDs[i]){
+                            if(papers[t].bibtex.length < 1)
+                                paperIDsWithEmptyBibtex.push(papers[t].title);
+                            else
+                                bibtexes += papers[t].bibtex + "\n";
+                            break;
+                        }
                     }
                 }
 
+                // warning of empty bibtex
+                if(paperIDsWithEmptyBibtex.length>0)
+                    alert("There were some bibtex missing from: \n" + paperIDsWithEmptyBibtex.join("\n"));
                 setClipboard(bibtexes);
             }
         });

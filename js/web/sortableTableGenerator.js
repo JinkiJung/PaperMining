@@ -130,13 +130,13 @@ function generateForm(id, obj, key, editable = true){
     }
     else if(key==="bibtex"){
         if(editable)
-            return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button><br><textarea id=\"" + rowId + "\"  class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</textarea></td>";
+            return "<td><div contenteditable=\"true\"  id=\"" + rowId + "\"  class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
         else
             return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
     }
     else if(key==="pdf"){
         if(editable)
-            return "<td><a href='../"+rowContent+"'>Open</a><br><textarea id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</textarea></td>";
+            return "<td><div contenteditable=\"true\"  id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br><a href='../"+rowContent+"'>Open</a></td>";
         else
             return "<td><a href='../"+rowContent+"'>Open</a></td>";
     }
@@ -221,7 +221,7 @@ function generateCell(context, jsonDatum, key, editables) {
         return generateDeleteButton(context, id);
     if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
         return "";
-    var editable = (context ==='mine' && key === 'id') ? false : editables.includes(key);
+    var editable = ((context ==='mine' || context ==='carve') && key === 'id') ? false : editables.includes(key);
 
     return generateForm(id, jsonDatum[key], key, editable);
 }
