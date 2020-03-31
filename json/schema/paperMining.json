@@ -229,20 +229,19 @@
             "timestamp": {
               "type": "string"
             },
-            "reaction": {
-              "type": "object",
-              "properties": {
-                "emoji": {
-                  "type": "string"
-                },
-                "content": {
-                  "type": "string"
-                },
-                "reactor": {
-                  "type": "string"
-                },
-                "timestamp": {
-                  "type": "string"
+            "reactions": {
+              "type": "array",
+              "items": {
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  },
+                  "reactor": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  }
                 }
               }
             }

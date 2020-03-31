@@ -80,7 +80,7 @@ function generateContent(obj, key){
         if (key ==='section')
             return obj['name'];
         else if(key ==='comment')
-            return obj['content'];
+            return obj;
         else if(Array.isArray(obj))
             return obj;
         else
@@ -143,12 +143,22 @@ function generateForm(id, obj, key, editable = true){
     else if(key==="order"){
         return "<td class='unselectable'><div id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>"+rowContent+"</div></td>";
     }
+    else if(key==="comment"){
+        return "<td>"+getComment(rowContent, rowId, id, key, editable)+"</td>";
+    }
     else{
         if(editable)
             return "<td><div id=\"" + rowId + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</></td>";
         else
             return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
+}
+
+function getComment(obj, itemId, id, key, isEditable){
+    if(isEditable === true)
+        return "<div id=\"" + itemId + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + obj["content"] + "</div><div class='commenter'> by "+obj["commenter"]+"</div>" +getReactions(id, itemId, obj["reactions"]);
+    else
+        return "<div id=\"" + itemId + "\">"+obj["content"]+"</div>";
 }
 
 function collectPaperIDs(id, key, paperIdArray, editable){
@@ -202,8 +212,10 @@ function callGetToRemove(url){
 function generateCellID(id, key){
     if(id === "new")
         return id + "_" + key;
+    else if (id.includes("_")) // it already has randString
+        return id + "_" + key;
     else
-        return id + "_" + key + generateShortRand();
+        return id + "_" + key + "_" + generateShortRand();
 }
 
 function generateCell(context, jsonDatum, key, editables) {

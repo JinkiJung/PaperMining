@@ -160,22 +160,6 @@ ul:after{
     overflow: hidden;
 }
 
-ul{
-    padding:0 0 0px 0;
-    display:inline;
-    display:-webkit-flex;
-    flex-wrap:wrap;
-    -webkit-flex-wrap:wrap;
-    list-style:none;
-}
-ul li{
-    padding: 0px 0px 0px 0px;
-    width:45%;
-    margin:0;
-    display:-webkit-flex;
-    float:left;
-}
-
 .tags {
     margin: 0px 0 0 0;
     display: inline-block;
@@ -345,3 +329,95 @@ input[type=button] {
 .top_button:hover {
     background: #363237;
 }
+
+.commenter {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    padding: 0px 0px;
+    margin: 0px 0px 0px;
+    text-align: right;
+    text-decoration: none;
+    color: rgb(46, 46, 46);
+    white-space: nowrap;
+    z-index: 0;
+}
+.reaction {
+    position: relative;
+    display: inline-block;
+    padding: 0px 0px;
+    margin: 0px 0px 0px;
+    text-align: left;
+    text-decoration: none;
+    color: rgb(46, 46, 46);
+    white-space: nowrap;
+}
+/* Tooltip text */
+.reaction .description {
+    visibility: hidden;
+    /*width: 120px;*/
+    background-color: #242734;
+    color: #fff;
+    text-align: center;
+    padding: 2px 0;
+    border-radius: 3px;
+    font-weight: bold;
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.reaction:hover .description {
+    visibility: visible;
+}
+
+.hbtn {
+    position: relative;
+    box-sizing: border-box;
+    display: inline-block;
+    overflow: hidden;
+    padding: 2px 0px;
+    margin: 0px 1px 0px;
+    text-align: center;
+    border: 0px solid rgb(154, 203, 225);
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    white-space: nowrap;
+    z-index: 0;
+}
+
+.hbtn i {
+    padding-right: 8px;
+}
+
+
+.hb-fill-on::before {
+    position: absolute;
+    content: "";
+    background: rgb(34, 34, 73);
+    transition-duration: 0.3s;
+    z-index: -1;
+    top: 0px;
+    right: auto;
+    bottom: auto;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+
+.hb-fill-on:hover::before {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+}
+
+
+.hb-fill-on:hover {
+    color: rgb(0, 0, 0);
+    background: rgb(255, 255, 255);
+    transition: color 0.3s ease 0s, background 0s ease 0.3s;
+}
+

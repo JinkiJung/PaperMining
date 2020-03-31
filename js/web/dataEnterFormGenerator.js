@@ -127,7 +127,7 @@ function collectDatum(context, paperID) {
         //if(fieldNames[i].value){
             var attributeName = fieldNames[i].id.substring(4);
             if(attributeName === 'comment')
-                newJsonDatum[attributeName] = {"content":fieldNames[i].value, "commenter":getContributorFromLS(), "timestamp":"time"};
+                newJsonDatum[attributeName] = {"content":fieldNames[i].value, "commenter":getContributorFromLS(), "timestamp":""};
             // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else if(attributeName === 'importance')
                 newJsonDatum[attributeName] = parseFloat(fieldNames[i].value);
@@ -184,7 +184,9 @@ function sendJsonDatum(context, data, command){
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             //console.log(xhr.responseText);
+
             location.reload();
+
             ////////////////// TO DO: refresh /////////////////////
             //$("#dataTable").load(window.location.href+"#dataTable" );
         }

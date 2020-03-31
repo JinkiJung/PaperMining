@@ -52,6 +52,15 @@ $(document).ready(function() {
     });
 });
 
+function getEmojiPopup(button){
+    const picker = new EmojiButton();
+    picker.togglePicker(button);
+    picker.on('emoji', emoji => {
+        console.log(button.dataset.referenceInput);
+        document.querySelector('#'+button.dataset.referenceInput).innerHTML = "<button class=\"hbtn\">"+emoji+"1</button>" +getEmojiButton(button.dataset.referenceInput);
+    });
+}
+
 function getSafeJsonData(jsonData){
     if(jsonData=== undefined)
         return [];

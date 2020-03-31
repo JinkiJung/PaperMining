@@ -14,6 +14,23 @@ function makeUpdate(domElement){
     }
 }
 
+function makeUpdateForReaction(thoughtId, commentId, itemToAdd){
+    var context = getURLParameter("context");
+    var reactionString = document.getElementById(commentId+"_reaction").innerHTML;
+    if(itemToAdd) {
+        var data_row_elements = document.getElementsByClassName(thoughtId);
+        var jsonDatum = convertToJson(context, thoughtId, data_row_elements);
+
+        if (reactionString.length > 0)
+            jsonDatum["comment"]["reactions"] = parseReaction(reactionString);
+        if(!jsonDatum["comment"].hasOwnProperty('reactions')|| !Array.isArray(jsonDatum["comment"]["reactions"]))
+            jsonDatum["comment"]["reactions"] = [];
+        jsonDatum["comment"]["reactions"].push(itemToAdd);
+    }
+    if(jsonDatum)
+        registerValidDatum(context, jsonDatum, "update");
+}
+
 function sendMetadataUpdate(type, content){
     var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/register/"+type+"?content="+content;
     $.get( url, function( data ) {
@@ -23,14 +40,32 @@ function sendMetadataUpdate(type, content){
     });
 }
 
+function parseReaction(reactionString){
+    var result = [];
+    if(reactionString && reactionString.length > 0){
+        var arrays = reactionString.split("<br>");
+        for(var k = 0 ; k < arrays.length ; k++){
+            var values = arrays[k].split(" - ");
+            result.push({content: values[0], reactor:values[1], timestamp:""});
+        }
+    }
+    return result;
+}
+
+function collectReactions(commentId){
+    var stringValue = document.getElementById(commentId+"_reaction").innerHTML;
+    return parseReaction(stringValue);
+}
+
 function convertToJson(context, id, elements){
     var jsonDatum = {"id": id};
+    var reactions = [];
     for(var i=0; i<elements.length ; i++){
         var attributeName = elements[i].dataset.attributeType;
         var value = (elements[i].type === 'checkbox') ? elements[i].checked : elements[i].innerHTML;
-        if(attributeName === 'comment')
-            jsonDatum[attributeName] = {"content":value, "commenter":getContributorFromLS(), "timestamp":""};
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if(attributeName === 'comment')
+            jsonDatum[attributeName] = {"content":value, "commenter":getContributorFromLS(), "timestamp":"", "reactions":collectReactions(elements[i].id)};
         else if(attributeName === 'importance')
             jsonDatum[attributeName] = parseFloat(value);
         else if(attributeName === 'order')

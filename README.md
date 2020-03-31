@@ -62,7 +62,10 @@ PaperMining asserts no claims of ownership to individual items of resources, met
 ## Dependencies
 - AJV (for JSON validation): https://ajv.js.org/
 - TableDnD (for sortable table implementation): http://isocra.github.io/TableDnD/
+```
 - emoji-button (for emoji reaction): https://github.com/joeattardi/emoji-button
+```
+
 
 ## Contributor
  - [Jinki Jung](https://github.com/jinkijung)
