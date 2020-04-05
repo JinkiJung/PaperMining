@@ -95,18 +95,39 @@ function addToPaperIdList(idArray, idItem){
 
 function updateOrderAttribute(table){
     var needToUpdate = [];
+    var lastMax = 1;
+
     for(var i =1 ; i< table.rows.length ; i++){
         var row = table.rows[i];
+        var orderValue = -1;
+        var id;
         for(var t=0; t<row.childNodes.length ; t++){
             if (row.childNodes[t].className === "unselectable") {
                 var divElement = row.childNodes[t].children[0];
-                var id = divElement.classList[0];
-                if(divElement.innerHTML != i.toString()){
-                    divElement.innerHTML = i;
-                    needToUpdate.push(getJsonDatum(id, i));
-                }
+                id = divElement.classList[0];
+                orderValue = parseInt(divElement.innerHTML);
                 break;
             }
+        }
+
+        if(orderValue < lastMax){ // this is where the new attributes fall in
+            if(lastMax === 1) //  fine, moving on
+            {}
+            else{  // needs an update
+                divElement.innerHTML = lastMax;
+                if(id)
+                    needToUpdate.push(getJsonDatum(id, lastMax));
+                lastMax +=1;
+            }
+        }
+        else if(orderValue === lastMax){ // fine, increments the checking criteria
+            lastMax += 1;
+        }
+        else{
+            divElement.innerHTML = lastMax;
+            if(id)
+                needToUpdate.push(getJsonDatum(id, lastMax));
+            lastMax +=1;
         }
     }
     return needToUpdate;

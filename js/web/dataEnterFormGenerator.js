@@ -47,6 +47,9 @@ function initializeInputFields(context){
     // set contributor's name from local
     if(document.getElementById("new_contributor") && hasLocalUserName())
         document.getElementById("new_contributor").value = getContributorFromLS();
+
+    if(document.getElementById("new_order"))
+        document.getElementById("new_order").value = -1;
 }
 
 function generateNewEntry(context, header){
@@ -106,6 +109,7 @@ function generateNewEntryCore(context, header){
 
 function addNewData(context, paperID){
     var jsonDatum = collectDatum(context, paperID);
+    console.log(jsonDatum);
     if(jsonDatum)
         registerValidDatum(context, jsonDatum, "store");
 }
@@ -118,13 +122,30 @@ function hasLocalUserName(){
         return false;
 }
 
+function getDefaultJsonByType(dataType){
+    var newJsonDatum = {};
+    if(dataType==='thought'){
+        // add order attribute
+        newJsonDatum['order'] = -1;
+        newJsonDatum['written'] = false;
+        newJsonDatum['toPlant'] = false;
+        newJsonDatum['importance'] = 0;
+    }
+    else if(dataType === 'paper'){
+        newJsonDatum['timestamp'] = ""; // dummy timestamp
+        newJsonDatum['contributor'] = getContributorFromLS();
+        newJsonDatum['importance'] = 0;
+    }
+    return newJsonDatum;
+}
+
 function collectDatum(context, paperID) {
     if(!hasLocalUserName())
     {
         alert("The contributor's name is empty. Move to Home page and enter your name.");
         return undefined;
     }
-    var newJsonDatum = {};
+    var newJsonDatum = getDefaultJsonByType(contextToDefinition(context));
     var fieldNames = document.getElementsByClassName('new_input_field');
     for(var i=0; i<fieldNames.length ; i++){
         //if(fieldNames[i].value){
@@ -134,6 +155,8 @@ function collectDatum(context, paperID) {
             // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else if(attributeName === 'importance')
                 newJsonDatum[attributeName] = parseFloat(fieldNames[i].value);
+            else if(attributeName === 'order')
+                newJsonDatum[attributeName] = parseInt(fieldNames[i].value);
             else if(attributeName === 'toPlant')
                 newJsonDatum[attributeName] = fieldNames[i].checked;
             // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,22 +164,13 @@ function collectDatum(context, paperID) {
                 newJsonDatum[attributeName] = fieldNames[i].value;
         //}
     }
-    // add order attribute
-    newJsonDatum['order'] = -1;
-    newJsonDatum['written'] = false;
-    newJsonDatum['toPlant'] = false;
-    if(context === 'collect'){
-        newJsonDatum['timestamp'] = ""; // dummy timestamp
-        newJsonDatum['contributor'] = getContributorFromLS();
-    }
-    else if(context === 'mine'){
+
+    if(context === 'mine'){
         if(paperID){
             if(newJsonDatum['paperID']===undefined)
                 newJsonDatum['paperID'] = [];
             newJsonDatum['paperID'].push(paperID);
         }
-        if(newJsonDatum['importance'] === "")
-            newJsonDatum['importance'] = 0;
         if(newJsonDatum['comment']){
             newJsonDatum['comment']['commenter'] = getContributorFromLS();
             newJsonDatum['comment']['timestamp'] = ""; // dummy timestamp
@@ -172,7 +186,10 @@ function collectDatum(context, paperID) {
 function validateDatum(context, schema, data, command = undefined) {
     var ajv = new Ajv;
     var valid = ajv.validate(schema, data);
-    if (!valid) { alert(getAjvErrorMessages(ajv.errors)); location.reload(); return false; }
+    if (!valid) {
+        alert(getAjvErrorMessages(ajv.errors));
+        return false;
+    }
     else if(command)
         sendJsonDatum(context, data, command);
     return true;

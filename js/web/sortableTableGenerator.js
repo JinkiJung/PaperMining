@@ -96,7 +96,7 @@ function generateContent(obj, key){
         return "";
 }
 
-function generateForm(id, obj, key, editable = true){
+function generateForm(id, obj, key, editable = true, isUnordered = false){
     var rowId = generateCellID(id, key);
     var rowContent = generateContent(obj, key);
     if(obj === undefined && key){ // for new entry
@@ -119,11 +119,12 @@ function generateForm(id, obj, key, editable = true){
             return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
     }
     else if(key==="id"){
+        var unorderedWarning = isUnordered ? "<b>[Need to be organized]</b><br>" : "";
         if(editable)
             return "<td><a href='table.html?context=mine&paperID="+obj+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ rowContent + "</a></td>";
         else
             //return "<td><div id=\"" + rowId + "\" class='unselectable'>"+rowContent+"</div></td>";
-            return "<td>"+rowContent+"</td>";
+            return "<td>"+unorderedWarning + rowContent + "</td>";
     }
     else if(key ==='paperID'){
         return "<td>"+collectPaperIDs(id, key, rowContent)+"</td>";
@@ -215,7 +216,7 @@ function generateCellID(id, key){
         return id + "_" + key + "_" + generateShortRand();
 }
 
-function generateCell(context, jsonDatum, key, editables) {
+function generateCell(context, jsonDatum, key, editables, isUnordered) {
     var id = jsonDatum['id'];
     if(key === 'delete')
         return generateDeleteButton(context, id);
@@ -223,7 +224,7 @@ function generateCell(context, jsonDatum, key, editables) {
         return "";
     var editable = ((context ==='mine' || context ==='carve') && key === 'id') ? false : editables.includes(key);
 
-    return generateForm(id, jsonDatum[key], key, editable);
+    return generateForm(id, jsonDatum[key], key, editable, isUnordered);
 }
 
 function generateTableBody(context, jsonData, keys, editables){
@@ -243,8 +244,13 @@ function generateRow(context, jsonDatum, keys, editables){
     if (context === 'plant' && jsonDatum['written'])
         updateCompletePaperIDs(jsonDatum, jsonDatum['written']);
 
+    var isUnordered = false;
+    // for ordering warning
+    if ( (context === 'carve' || context === 'plant') && jsonDatum['order'] < 0)
+        isUnordered = true;
+
     for (var k = 0; k < keys.length; k++) {
-        result += generateCell(context, jsonDatum, keys[k], editables);
+        result += generateCell(context, jsonDatum, keys[k], editables, isUnordered);
     }
     return result + "</tr>";
 }
@@ -352,7 +358,7 @@ function sortTable(numElement) {
             y = getPriority(rows[i + 1].getElementsByTagName("TD")[numElement].children[0]);
             //check if the two rows should switch place:
             if(x!==y && compareWithContext(x,y) ^ sortingState[numElement]){
-                shouldSwitch=true;
+                shouldSwitch = true;
                 break;
             }
         }
