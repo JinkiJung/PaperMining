@@ -1,7 +1,7 @@
-function generateDataEnterForm(context, headers){
+function generateDataEnterForm(context, headers, sectionList){
     if(context === 'plant')
         return ;
-    document.getElementById("dataEnterForm").innerHTML = generateNewEntry(context, headers);
+    document.getElementById("dataEnterForm").innerHTML = generateNewEntry(context, headers, sectionList);
     var modal = document.getElementById('myModal');
     // Get the button that opens the modal
     var btn = document.getElementById("newEntryBtn");
@@ -52,7 +52,7 @@ function initializeInputFields(context){
         document.getElementById("new_order").value = -1;
 }
 
-function generateNewEntry(context, header){
+function generateNewEntry(context, header, sectionList){
     var buttonName = "Add " + contextToDefinition(context);
     if(context === 'carve')
         buttonName += " without reference";
@@ -60,7 +60,7 @@ function generateNewEntry(context, header){
     result += "<div id=\"myModal\" class=\"modal\">";
     result += "<div class=\"modal-content\">";
     result += "<span class=\"close\">&times;</span>";
-    result += generateNewEntryCore(context, header);
+    result += generateNewEntryCore(context, header, sectionList);
     result += "</div></div>";
     return result;
 }
@@ -86,15 +86,16 @@ function createPDFUploadPopup(rowId){
     return "<a href=\"#\" onClick=\"passTitle(); return false;\">Upload</a><noscript>You need Javascript to use the previous link or use <a href=\"index.html\" target=\"_blank\">Upload</a></noscript><textarea readonly class='new_input_field' id=\"" + rowId + "\" ></textarea>";
 }
 
-function generateNewEntryCore(context, header){
+function generateNewEntryCore(context, header, sectionList){
     var result = "<table>";
     //*
+    var id = 'new';
+    var selectString = getSelectOfSectionList(context, id, sectionList, undefined, true);
+
     for(var k=0; k<header.length; k++){
         result +="<tr>";
-        var textValue="";
-
         result += "<td class=table_title width=10><b>"+capitalizeFirstLetter(header[k])+"</b></td>";
-        result += generateForm("new",undefined, header[k]);
+        result += generateForm(id,undefined, header[k], selectString);
         result +="</tr>";
     }
     var paperID = getURLParameter("paperID");
@@ -109,7 +110,6 @@ function generateNewEntryCore(context, header){
 
 function addNewData(context, paperID){
     var jsonDatum = collectDatum(context, paperID);
-    console.log(jsonDatum);
     if(jsonDatum)
         registerValidDatum(context, jsonDatum, "store");
 }
@@ -146,7 +146,7 @@ function collectDatum(context, paperID) {
         return undefined;
     }
     var newJsonDatum = getDefaultJsonByType(contextToDefinition(context));
-    var fieldNames = document.getElementsByClassName('new_input_field');
+    var fieldNames = document.getElementsByClassName('new');
     for(var i=0; i<fieldNames.length ; i++){
         //if(fieldNames[i].value){
             var attributeName = fieldNames[i].id.substring(4);
@@ -163,6 +163,8 @@ function collectDatum(context, paperID) {
             else
                 newJsonDatum[attributeName] = fieldNames[i].value;
         //}
+        console.log(fieldNames[i]);
+        console.log(newJsonDatum[attributeName]);
     }
 
     if(context === 'mine'){

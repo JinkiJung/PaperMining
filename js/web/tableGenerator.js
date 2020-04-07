@@ -24,11 +24,13 @@ $(document).ready(function() {
                     var paperID = getURLParameter("paperID");
 
                     document.getElementById("title").innerHTML = "<center><H3>"+getTitle(jsonData, paperID)+"</H3></center>";
+
+                    var sectionList = getSafeJsonData(jsonData['sections']);
                     if(context === 'mine'){
-                        document.getElementById("dataTable").innerHTML = generateTable(context, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], !accessedFromGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], sectionList, !accessedFromGitHub());
                     }
                     else{
-                        document.getElementById("dataTable").innerHTML = generateTable(context, getSafeJsonData(jsonData[contextToData(context)]), jsonSchema["definitions"], !accessedFromGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context, getSafeJsonData(jsonData[contextToData(context)]), jsonSchema["definitions"], sectionList, !accessedFromGitHub());
                     }
 
                     if(!accessedFromGitHub()){
@@ -113,7 +115,7 @@ function updateByFocusOut(){
     $('div[contenteditable=true]').focusout(function(){
         if($(this)[0].innerHTML !== storedText){
             try{
-                makeUpdate($(this)[0]);
+                makeUpdateByElement($(this)[0]);
             }
             catch (e) {
                 alert(e.message);
@@ -123,7 +125,7 @@ function updateByFocusOut(){
 
     $('input[type=checkbox]').click(function(){
         try{
-            makeUpdate($(this)[0]);
+            makeUpdateByElement($(this)[0]);
         }
         catch (e) {
             alert(e.message);

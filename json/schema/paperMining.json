@@ -156,9 +156,9 @@
             "default": ["carve"]
           }
         },
-        "section": {
+        "sectionID": {
           "type": "string",
-          "description" : "Section related to the thought",
+          "description" : "Section ID related to the thought",
           "_visible": {
             "type": "array",
             "items":{

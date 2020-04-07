@@ -5,7 +5,7 @@ function getTitle(jsonData, paperID){
         return jsonData["title"]
 }
 
-function generateTable(context, jsonData, jsonSchema, isEditable){
+function generateTable(context, jsonData, jsonSchema, sectionList, isEditable){
     var result = "";
     var trStyle = "";
     trStyle = "class=\"nodrop nodrag\"";
@@ -19,19 +19,125 @@ function generateTable(context, jsonData, jsonSchema, isEditable){
     result += generateTableHeader(headers, descriptions);
     // new entry
     if(isEditable === true)
-        generateDataEnterForm(context, editables);
+        generateDataEnterForm(context, editables, sectionList);
     if(context === 'plant')
         generateBibtexCopyBtn();
 
     if(jsonData){
         if(jsonData.length > 0)
-            result += generateTableBody(context, jsonData, headers, editables);
+            result += generateTableBody(context, jsonData, headers, sectionList, editables);
         else
             result += generateDummyBody(context, headers, isEditable);
     }
     // existing data
     //result += generateDataRows(type,projectName, data, headers);
     return result + "</table>";
+}
+
+function generateTableBody(context, jsonData, keys, sectionList, editables){
+    var result = "";
+    for(var t=0; t < jsonData.length; t++) {
+        result += generateRow(context, jsonData[t], keys, sectionList, editables);
+    }
+    return result;
+}
+
+function generateRow(context, jsonDatum, keys, sectionList, editables){
+    if(isNotRelated(context, jsonDatum))
+        return "";
+    var result = "<tr class=\"entry\">";
+
+    // for bibtex collecting
+    if (context === 'plant' && jsonDatum['written'])
+        updateCompletePaperIDs(jsonDatum, jsonDatum['written']);
+
+    var isUnordered = false;
+    // for ordering warning
+    if ( (context === 'carve' || context === 'plant') && jsonDatum['order'] < 0)
+        isUnordered = true;
+
+    for (var k = 0; k < keys.length; k++) {
+        result += generateCell(context, jsonDatum, keys[k], sectionList, editables, isUnordered);
+    }
+    return result + "</tr>";
+}
+
+function generateCell(context, jsonDatum, key, sectionList, editables, isUnordered) {
+    var id = jsonDatum['id'];
+    if(key === 'delete')
+        return generateDeleteButton(context, id);
+    if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
+        return "";
+    var editable = ((context ==='mine' || context ==='carve') && key === 'id') ? false : editables.includes(key);
+
+    var selectString = getSelectOfSectionList(context, id, sectionList, jsonDatum['sectionID'], editable);
+
+    return generateForm(id, jsonDatum[key], key, selectString, editable, isUnordered);
+}
+
+function generateForm(id, obj, key, selectString, editable = true, isUnordered = false){
+    var cellID = generateCellID(id, key);
+    var rowContent = generateContent(obj, key);
+    if(obj === undefined && key){ // for new entry
+        // should be merted to below //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if(key === 'importance' || key === 'order'){
+            return "<td><input type=\"number\" id=\"" + cellID + "\" class = '"+id+"'>" + rowContent + "</input></td>";
+        }
+        else if(key === 'toPlant')
+            return "<td><input type=\"checkbox\" id=\"" + cellID + "\" class = '"+id+"'>" + rowContent + "</input></td>";
+        else if(key === 'pdf')
+            return "<td>" + createPDFUploadPopup(cellID) + "</td>";
+        else if(key==="sectionID"){
+            return "<td><textarea id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"' hidden></textarea>"+selectString+"</td>";
+        }
+        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        else
+            return "<td><textarea id=\"" + cellID + "\" class = '"+id+"'>" + rowContent + "</textarea></td>";
+    }
+    else if(typeof obj === "boolean"){
+        if(editable)
+            return "<td><input type='checkbox' id=\"" + cellID + "\" " + rowContent + " class = \""+id+"\" data-attribute-type = '"+key+"'></input></td>";
+        else
+            return "<td><div id=\"" + cellID + "\">"+rowContent+"</div></td>";
+    }
+    else if(key==="id"){
+        var unorderedWarning = isUnordered ? "<b>[Need to be organized]</b><br>" : "";
+        if(editable)
+            return "<td><a href='table.html?context=mine&paperID="+obj+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ rowContent + "</a></td>";
+        else
+            //return "<td><div id=\"" + cellID + "\" class='unselectable'>"+rowContent+"</div></td>";
+            return "<td>"+unorderedWarning + rowContent + "</td>";
+    }
+    else if(key ==='paperID'){
+        return "<td>"+collectPaperIDs(id, key, rowContent)+"</td>";
+    }
+    else if(key==="bibtex"){
+        if(editable)
+            return "<td><div contenteditable=\"true\"  id=\"" + cellID + "\"  class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br><button id=\"" + cellID + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
+        else
+            return "<td><button id=\"" + cellID + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
+    }
+    else if(key==="pdf"){
+        if(editable)
+            return "<td><div contenteditable=\"true\"  id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br><a href='../"+rowContent+"'>Open</a></td>";
+        else
+            return "<td><a href='../"+rowContent+"'>Open</a></td>";
+    }
+    else if(key==="order"){
+        return "<td class='unselectable'><div id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>"+rowContent+"</div></td>";
+    }
+    else if(key==="comment"){
+        return "<td>"+getComment(rowContent, cellID, id, key, editable)+"</td>";
+    }
+    else if(key==="sectionID"){
+        return "<td><div id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"' hidden>"+getValueForHiddenSectionID(rowContent)+"</div>"+selectString+"</td>";
+    }
+    else{
+        if(editable)
+            return "<td><div id=\"" + cellID + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</></td>";
+        else
+            return "<td><div id=\"" + cellID + "\">"+rowContent+"</div></td>";
+    }
 }
 
 function getTitleFromPaperID(jsonData, paperID){
@@ -96,62 +202,44 @@ function generateContent(obj, key){
         return "";
 }
 
-function generateForm(id, obj, key, editable = true, isUnordered = false){
-    var rowId = generateCellID(id, key);
-    var rowContent = generateContent(obj, key);
-    if(obj === undefined && key){ // for new entry
-        // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if(key === 'importance' || key === 'order'){
-            return "<td><input type=\"number\" class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</input></td>";
+function selectAndAddNewData(context, id, value){
+    storeItToHiddenSectionID(id, value);
+    if(id!=='new') // when it comes to column update
+        makeUpdate(context, id);
+}
+
+function storeItToHiddenSectionID(id, value){
+    document.getElementById(id + '_sectionID').innerHTML = value;
+}
+
+function getValueForHiddenSectionID(text){
+    if(text && text.length>0 && text !== 'unassigned')
+        return text;
+    else
+        return "";
+}
+
+function getSelectOfSectionList(context, id, sectionList, value, isEditable){
+    if(isEditable){
+        var result = "<select id=\""+id+"_select\" onchange='selectAndAddNewData(\""+context+"\",\""+id+"\",this.value)'>";
+        result += "<option selected disabled>unassigned</option>";
+        for(var i=0; i< sectionList.length ; i++){
+            if(value && value === sectionList[i].id)
+                result+= "<option selected=\"selected\" value=\""+sectionList[i].id+"\">"+sectionList[i].name+"</option>";
+            else
+                result+= "<option value=\""+sectionList[i].id+"\">"+sectionList[i].name+"</option>";
         }
-        else if(key === 'toPlant')
-            return "<td><input type=\"checkbox\" class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</input></td>";
-        else if(key === 'pdf')
-            return "<td>" + createPDFUploadPopup(rowId) + "</td>";
-        // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        else
-            return "<td><textarea class='new_input_field' id=\"" + rowId + "\" >" + rowContent + "</textarea></td>";
-    }
-    else if(typeof obj === "boolean"){
-        if(editable)
-            return "<td><input type='checkbox' id=\"" + rowId + "\" " + rowContent + " class = \""+id+"\" data-attribute-type = '"+key+"'></input></td>";
-        else
-            return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
-    }
-    else if(key==="id"){
-        var unorderedWarning = isUnordered ? "<b>[Need to be organized]</b><br>" : "";
-        if(editable)
-            return "<td><a href='table.html?context=mine&paperID="+obj+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ rowContent + "</a></td>";
-        else
-            //return "<td><div id=\"" + rowId + "\" class='unselectable'>"+rowContent+"</div></td>";
-            return "<td>"+unorderedWarning + rowContent + "</td>";
-    }
-    else if(key ==='paperID'){
-        return "<td>"+collectPaperIDs(id, key, rowContent)+"</td>";
-    }
-    else if(key==="bibtex"){
-        if(editable)
-            return "<td><div contenteditable=\"true\"  id=\"" + rowId + "\"  class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
-        else
-            return "<td><button id=\"" + rowId + "\" value = " + rowContent + " onclick=\"setClipboard('"+rowContent+"')\">Copy</button></td>";
-    }
-    else if(key==="pdf"){
-        if(editable)
-            return "<td><div contenteditable=\"true\"  id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br><a href='../"+rowContent+"'>Open</a></td>";
-        else
-            return "<td><a href='../"+rowContent+"'>Open</a></td>";
-    }
-    else if(key==="order"){
-        return "<td class='unselectable'><div id=\"" + rowId + "\" class = '"+id+"' data-attribute-type = '"+key+"'>"+rowContent+"</div></td>";
-    }
-    else if(key==="comment"){
-        return "<td>"+getComment(rowContent, rowId, id, key, editable)+"</td>";
+        return result + "</select>";
     }
     else{
-        if(editable)
-            return "<td><div id=\"" + rowId + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</></td>";
-        else
-            return "<td><div id=\"" + rowId + "\">"+rowContent+"</div></td>";
+        if(value){
+            for(var i=0; i< sectionList.length ; i++){
+                if(value === sectionList[i].id){
+                    return sectionList[i].name;
+                }
+            }
+        }
+        return 'unassigned';
     }
 }
 
@@ -166,7 +254,9 @@ function collectPaperIDs(id, key, paperIdArray){
     var result = "";
     if(paperIdArray === undefined)
         return result;
+
     for(var i=0; i<paperIdArray.length; i++){
+
         result += "<a href='table.html?context=mine&paperID="+paperIdArray[i]+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ paperIdArray[i] + "</a>";
         if(i < paperIdArray.length-1)
             result += ", ";
@@ -214,45 +304,6 @@ function generateCellID(id, key){
         return id + "_" + key;
     else
         return id + "_" + key + "_" + generateShortRand();
-}
-
-function generateCell(context, jsonDatum, key, editables, isUnordered) {
-    var id = jsonDatum['id'];
-    if(key === 'delete')
-        return generateDeleteButton(context, id);
-    if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
-        return "";
-    var editable = ((context ==='mine' || context ==='carve') && key === 'id') ? false : editables.includes(key);
-
-    return generateForm(id, jsonDatum[key], key, editable, isUnordered);
-}
-
-function generateTableBody(context, jsonData, keys, editables){
-    var result = "";
-    for(var t=0; t < jsonData.length; t++) {
-        result += generateRow(context, jsonData[t], keys, editables);
-    }
-    return result;
-}
-
-function generateRow(context, jsonDatum, keys, editables){
-    if(isNotRelated(context, jsonDatum))
-        return "";
-    var result = "<tr class=\"entry\">";
-
-    // for bibtex collecting
-    if (context === 'plant' && jsonDatum['written'])
-        updateCompletePaperIDs(jsonDatum, jsonDatum['written']);
-
-    var isUnordered = false;
-    // for ordering warning
-    if ( (context === 'carve' || context === 'plant') && jsonDatum['order'] < 0)
-        isUnordered = true;
-
-    for (var k = 0; k < keys.length; k++) {
-        result += generateCell(context, jsonDatum, keys[k], editables, isUnordered);
-    }
-    return result + "</tr>";
 }
 
 function isNotRelated(context, jsonDatum){
