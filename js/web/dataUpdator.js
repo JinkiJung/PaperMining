@@ -120,9 +120,10 @@ function convertToJson(context, id, elements){
 }
 
 function addToPaperIdList(idArray, idItem){
-    if(idArray && Array.isArray(idArray))
-        idArray.push(idItem);
-    else{
+    if(idArray && Array.isArray(idArray)) {
+        if (!idArray.includes(idItem))
+            idArray.push(idItem);
+    }else{
         idArray = [];
         idArray.push(idItem);
     }

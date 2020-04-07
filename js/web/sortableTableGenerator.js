@@ -207,11 +207,11 @@ function generateContent(obj, key){
         return "";
 }
 
-function selectAndAddNewData(context, id, value, type){ // type can be either sectionID or paperID
+function updateFromSelect(context, id, value, type){ // type can be either sectionID or paperID
     if(type === 'sectionID')
         applyToHiddenSectionID(id, value);
     else if(type === 'paperID')
-        applyToHiddenPaperID(id, value);
+        applyToHiddenPaperID(id);
         /////////// also need to update the paperID selection as well....
     if(id!=='new') // when it comes to column update
         makeUpdate(context, id);
@@ -221,10 +221,37 @@ function applyToHiddenSectionID(id, value){
     document.getElementById(id + '_sectionID').innerHTML = value;
 }
 
-function applyToHiddenPaperID(id, value){
-    var hiddenPaperIDValue = document.getElementById(id + '_paperID').innerHTML;
-    if(hiddenPaperIDValue !== undefined && !hiddenPaperIDValue.includes(value))
-        document.getElementById(id + '_paperID').innerHTML += (hiddenPaperIDValue.length>0 ? "," : "") + getSinglePaperLink(value);
+function getSelectedPaperIDFromSelect(id){
+    var result = [];
+    var elements = document.getElementById(id+'_paper_select').options;
+    for(var i = 0; i < elements.length; i++){
+        if(elements[i].selected)
+            result.push(elements[i].value);
+    }
+    return result;
+}
+
+function getShownPaperID(id){
+    var text = getSafeValue(document.getElementById(id + '_paperID').textContent);
+    if(text.length === 0)
+        return [];
+    else
+        return text.split(',');
+}
+
+function applyToHiddenPaperID(id){
+    if(document.getElementById(id + '_paperID').innerHTML){
+        var selectedItem = getSelectedPaperIDFromSelect(id);
+        var shownItem = getShownPaperID(id);
+
+        if(selectedItem.length < shownItem.length){ // removal
+            document.getElementById(id + '_paperID').innerHTML = generatePaperLinks(selectedItem);
+        }
+        else if(selectedItem.length > shownItem.length){ // addition
+            document.getElementById(id + '_paperID').innerHTML = generatePaperLinks(selectedItem);
+        }
+        // will do nothing otherwise..
+    }
 }
 
 function getPDFLink(rowContent){
@@ -258,9 +285,7 @@ function generatePaperLinks(paperIdArray){
 function generatePaperIDSelection(context, id, papers, paperIdArray, isEditable){
     if(!isEditable)
         return "";
-    var result = "<select id=\""+id+"_paper_select\" onchange='selectAndAddNewData(\""+context+"\",\""+id+"\",this.value,\"paperID\")' multiple>";
-    console.log(papers);
-    console.log(paperIdArray);
+    var result = "<select class='slimSelectPM' id=\""+id+"_paper_select\" onchange='updateFromSelect(\""+context+"\",\""+id+"\",this.value,\"paperID\")' multiple>";
     for(var i=0; i< papers.length ; i++){
         var inValueArray = false;
         for(var t=0; t<paperIdArray.length ; t++){
@@ -284,7 +309,7 @@ function generateDiv(cellID, id, key, rowContent, isHidden = false){
 
 function generateSectionIDSelection(context, id, sectionList, value, isEditable){
     if(isEditable){
-        var result = "<select id=\""+id+"_section_select\" onchange='selectAndAddNewData(\""+context+"\",\""+id+"\",this.value,\"sectionID\")'>";
+        var result = "<select class='slimSelectPM' id=\""+id+"_section_select\" onchange='updateFromSelect(\""+context+"\",\""+id+"\",this.value,\"sectionID\")'>";
         result += "<option selected disabled>unassigned</option>";
         for(var i=0; i< sectionList.length ; i++){
             if(value && value === sectionList[i].id)

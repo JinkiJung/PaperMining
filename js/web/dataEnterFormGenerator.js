@@ -130,44 +130,8 @@ function collectDatum(context, paperID) {
     }
     //var newJsonDatum = getDefaultJsonByType(contextToDefinition(context));
     var fieldNames = document.getElementsByClassName('new');
-    var newJsonDatum = convertToJson(context, 'new', fieldNames);
-    /*
-    for(var i=0; i<fieldNames.length ; i++){
-        //if(fieldNames[i].value){
-            var attributeName = fieldNames[i].id.substring(4);
-            if(attributeName === 'comment')
-                newJsonDatum[attributeName] = {"content":fieldNames[i].value, "commenter":getContributorFromLS(), "timestamp":""};
-            // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            else if(attributeName === 'importance')
-                newJsonDatum[attributeName] = parseFloat(fieldNames[i].value);
-            else if(attributeName === 'order')
-                newJsonDatum[attributeName] = parseInt(fieldNames[i].value);
-            else if(attributeName === 'toPlant')
-                newJsonDatum[attributeName] = fieldNames[i].checked;
-            else if(attributeName === 'paperID'){
-                if(value)
-                    jsonDatum[attributeName] = value.split(',');
-            }
-            // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            else
-                newJsonDatum[attributeName] = fieldNames[i].value;
-        //}
-        console.log(fieldNames[i]);
-        console.log(newJsonDatum[attributeName]);
-    }
 
-     */
-
-    if(context === 'mine'){
-        if(paperID){
-            newJsonDatum['paperID'].push(paperID);
-        }
-        if(newJsonDatum['comment']){
-            newJsonDatum['comment']['commenter'] = getContributorFromLS();
-            newJsonDatum['comment']['timestamp'] = ""; // dummy timestamp
-        }
-    }
-    return newJsonDatum;
+    return convertToJson(context, 'new', fieldNames);
 }
 
 function validateDatum(context, schema, data, command = undefined) {
@@ -261,13 +225,8 @@ function checkEntry(entered){
     }
 }
 
-
 function getTitleFromTextArea(){
     return $("#new_title").val();
-}
-
-function setPDFFilePath(text){
-    document.getElementById("new_pdf").value = text;
 }
 
 function passTitle(){
@@ -278,4 +237,15 @@ function passTitle(){
     }
     else
         alert("Please enter the paper title before uploading it.");
+}
+
+function enableSlimSelect(){
+    var slimSelectElements = document.getElementsByClassName('slimSelectPM');
+    for(var i=0; i<slimSelectElements.length ; i++){
+        if(slimSelectElements[i].type === 'select-one' || slimSelectElements[i].type === 'select-multiple'){
+            new SlimSelect({
+                select: '#'+slimSelectElements[i].id
+            })
+        }
+    }
 }

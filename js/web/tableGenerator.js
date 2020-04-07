@@ -27,12 +27,15 @@ $(document).ready(function() {
 
                     var sections = getSafeJsonData(jsonData['sections']);
                     var papers = getSafeJsonData(jsonData['papers']);
+
                     if(context === 'mine'){
                         document.getElementById("dataTable").innerHTML = generateTable(context, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], sections, !accessedFromGitHub());
                     }
                     else{
                         document.getElementById("dataTable").innerHTML = generateTable(context, getSafeJsonData(jsonData[contextToData(context)]), jsonSchema["definitions"], sections, !accessedFromGitHub(), papers);
                     }
+
+                    enableSlimSelect();
 
                     if(!accessedFromGitHub()){
                         updateByFocusOut();
@@ -43,7 +46,7 @@ $(document).ready(function() {
                         sortTable(0); // order
                         //////////////////////////////////////////////////////////////////////////////////////////
                     }
-                    if(context === 'carve'){
+                    else if(context === 'carve'){
                         //////////////////////////////////////////////////////////////////////////////////////////
                         sortTable(1); // order
                         //////////////////////////////////////////////////////////////////////////////////////////
@@ -76,13 +79,13 @@ function getJsonDatum(id, order){
 }
 
 function enableDragAndDrop(){
-    $("tbody").tableDnD({
+    $("#sortableTable").tableDnD({
         onDragClass: "myDragClass"
     });
-    $("tbody").bind("DOMSubtreeModified", function() {
+    $("#sortableTable").bind("DOMSubtreeModified", function() {
 
     });
-    $("tbody").mouseup(function(){
+    $("#sortableTable").mouseup(function(){
         var context = getURLParameter("context");
         var needToUpdate = updateOrderAttribute($(this)[0]);
         for(var i=0; i<needToUpdate.length ; i++){
