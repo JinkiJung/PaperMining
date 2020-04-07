@@ -82,20 +82,20 @@ function drawConfirmCircle(color) {
     context.fill();
 }
 
-function createPDFUploadPopup(rowId){
-    return "<a href=\"#\" onClick=\"passTitle(); return false;\">Upload</a><noscript>You need Javascript to use the previous link or use <a href=\"index.html\" target=\"_blank\">Upload</a></noscript><textarea readonly class='new_input_field' id=\"" + rowId + "\" ></textarea>";
+function createPDFUploadPopup(key, rowId){
+    return "<a href=\"#\" onClick=\"passTitle(); return false;\">Upload</a><noscript>You need Javascript to use the previous link or use <a href=\"index.html\" target=\"_blank\">Upload</a></noscript><textarea readonly class='new' id=\"" + rowId + "\" data-attribute-type = '"+key+"'></textarea>";
 }
 
-function generateNewEntryCore(context, header, sectionList){
+function generateNewEntryCore(context, header, sections){
     var result = "<table>";
     //*
     var id = 'new';
-    var selectString = getSelectOfSectionList(context, id, sectionList, undefined, true);
+    var selectString = generateSectionIDSelection(context, id, sections, undefined, true);
 
     for(var k=0; k<header.length; k++){
         result +="<tr>";
         result += "<td class=table_title width=10><b>"+capitalizeFirstLetter(header[k])+"</b></td>";
-        result += generateForm(id,undefined, header[k], selectString);
+        result += generateForm(id,undefined, header[k],true, false, selectString);
         result +="</tr>";
     }
     var paperID = getURLParameter("paperID");
@@ -122,31 +122,16 @@ function hasLocalUserName(){
         return false;
 }
 
-function getDefaultJsonByType(dataType){
-    var newJsonDatum = {};
-    if(dataType==='thought'){
-        // add order attribute
-        newJsonDatum['order'] = -1;
-        newJsonDatum['written'] = false;
-        newJsonDatum['toPlant'] = false;
-        newJsonDatum['importance'] = 0;
-    }
-    else if(dataType === 'paper'){
-        newJsonDatum['timestamp'] = ""; // dummy timestamp
-        newJsonDatum['contributor'] = getContributorFromLS();
-        newJsonDatum['importance'] = 0;
-    }
-    return newJsonDatum;
-}
-
 function collectDatum(context, paperID) {
     if(!hasLocalUserName())
     {
         alert("The contributor's name is empty. Move to Home page and enter your name.");
         return undefined;
     }
-    var newJsonDatum = getDefaultJsonByType(contextToDefinition(context));
+    //var newJsonDatum = getDefaultJsonByType(contextToDefinition(context));
     var fieldNames = document.getElementsByClassName('new');
+    var newJsonDatum = convertToJson(context, 'new', fieldNames);
+    /*
     for(var i=0; i<fieldNames.length ; i++){
         //if(fieldNames[i].value){
             var attributeName = fieldNames[i].id.substring(4);
@@ -159,6 +144,10 @@ function collectDatum(context, paperID) {
                 newJsonDatum[attributeName] = parseInt(fieldNames[i].value);
             else if(attributeName === 'toPlant')
                 newJsonDatum[attributeName] = fieldNames[i].checked;
+            else if(attributeName === 'paperID'){
+                if(value)
+                    jsonDatum[attributeName] = value.split(',');
+            }
             // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             else
                 newJsonDatum[attributeName] = fieldNames[i].value;
@@ -167,20 +156,16 @@ function collectDatum(context, paperID) {
         console.log(newJsonDatum[attributeName]);
     }
 
+     */
+
     if(context === 'mine'){
         if(paperID){
-            if(newJsonDatum['paperID']===undefined)
-                newJsonDatum['paperID'] = [];
             newJsonDatum['paperID'].push(paperID);
         }
         if(newJsonDatum['comment']){
             newJsonDatum['comment']['commenter'] = getContributorFromLS();
             newJsonDatum['comment']['timestamp'] = ""; // dummy timestamp
         }
-    }
-    else if(context === 'carve'){
-        if(newJsonDatum['paperID']===undefined)
-            newJsonDatum['paperID'] = [];
     }
     return newJsonDatum;
 }
@@ -253,7 +238,7 @@ function createBibButtons(){
 }
 
 function clearInputField(){
-    var fieldNames = document.getElementsByClassName('new_input_field');
+    var fieldNames = document.getElementsByClassName('new');
     for(var i=0; i<fieldNames.length ; i++) {
         if (fieldNames[i].value) {
             fieldNames[i].value = "";

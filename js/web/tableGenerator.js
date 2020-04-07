@@ -25,12 +25,13 @@ $(document).ready(function() {
 
                     document.getElementById("title").innerHTML = "<center><H3>"+getTitle(jsonData, paperID)+"</H3></center>";
 
-                    var sectionList = getSafeJsonData(jsonData['sections']);
+                    var sections = getSafeJsonData(jsonData['sections']);
+                    var papers = getSafeJsonData(jsonData['papers']);
                     if(context === 'mine'){
-                        document.getElementById("dataTable").innerHTML = generateTable(context, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], sectionList, !accessedFromGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context, getThoughtFromPaperID(jsonData["thoughts"],paperID), jsonSchema["definitions"], sections, !accessedFromGitHub());
                     }
                     else{
-                        document.getElementById("dataTable").innerHTML = generateTable(context, getSafeJsonData(jsonData[contextToData(context)]), jsonSchema["definitions"], sectionList, !accessedFromGitHub());
+                        document.getElementById("dataTable").innerHTML = generateTable(context, getSafeJsonData(jsonData[contextToData(context)]), jsonSchema["definitions"], sections, !accessedFromGitHub(), papers);
                     }
 
                     if(!accessedFromGitHub()){

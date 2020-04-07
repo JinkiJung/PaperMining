@@ -57,16 +57,44 @@ function parseReaction(reactionString){
 }
 
 function collectReactions(commentId){
-    var stringValue = document.getElementById(commentId+"_reaction").innerHTML;
-    return parseReaction(stringValue);
+    if(document.getElementById(commentId+"_reaction")){
+        var stringValue = document.getElementById(commentId+"_reaction").innerHTML;
+        return parseReaction(stringValue);
+    }
+    return [];
+}
+
+function getDefaultJsonByType(dataType, id){
+    var newJsonDatum = {};
+    if(dataType==='thought'){
+        newJsonDatum['id'] = id;
+        newJsonDatum['order'] = -1;
+        newJsonDatum['written'] = false;
+        newJsonDatum['toPlant'] = false;
+        newJsonDatum['importance'] = 0;
+        newJsonDatum['paperID'] = [];
+    }
+    else if(dataType === 'paper'){
+        newJsonDatum['id'] = id;
+        newJsonDatum['importance'] = 0;
+        newJsonDatum['contributor'] = getContributorFromLS();
+        newJsonDatum['timestamp'] = ""; // dummy timestamp
+    }
+    return newJsonDatum;
 }
 
 function convertToJson(context, id, elements){
-    var jsonDatum = {"id": id};
-    var reactions = [];
+    var jsonDatum = getDefaultJsonByType(contextToDefinition(context), id);
     for(var i=0; i<elements.length ; i++){
         var attributeName = elements[i].dataset.attributeType;
         var value = (elements[i].type === 'checkbox') ? elements[i].checked : elements[i].innerHTML;
+        // for the new entry input
+        if(elements[i].type === 'textarea' || elements[i].type === 'number')
+            value = elements[i].value;
+        // if it has link in it, just grasp text value
+        if(typeof value === 'string' && value.includes("</a>"))
+            value = elements[i].textContent;
+
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if(attributeName === 'comment')
             jsonDatum[attributeName] = {"content":value, "commenter":getContributorFromLS(), "timestamp":"", "reactions":collectReactions(elements[i].id)};
@@ -77,7 +105,10 @@ function convertToJson(context, id, elements){
         else if(attributeName === 'toPlant')
             jsonDatum[attributeName] = value;
         else if(attributeName === 'paperID'){
-            addToPaperIdList(jsonDatum[attributeName], value);
+            if(value)
+                jsonDatum[attributeName] = value.split(',');
+            else
+                jsonDatum[attributeName] = [];
         }
         // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         else

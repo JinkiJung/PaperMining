@@ -5,7 +5,7 @@ function getTitle(jsonData, paperID){
         return jsonData["title"]
 }
 
-function generateTable(context, jsonData, jsonSchema, sectionList, isEditable){
+function generateTable(context, jsonData, jsonSchema, sections, isEditable, papers){
     var result = "";
     var trStyle = "";
     trStyle = "class=\"nodrop nodrag\"";
@@ -19,13 +19,13 @@ function generateTable(context, jsonData, jsonSchema, sectionList, isEditable){
     result += generateTableHeader(headers, descriptions);
     // new entry
     if(isEditable === true)
-        generateDataEnterForm(context, editables, sectionList);
+        generateDataEnterForm(context, editables, sections);
     if(context === 'plant')
         generateBibtexCopyBtn();
 
     if(jsonData){
         if(jsonData.length > 0)
-            result += generateTableBody(context, jsonData, headers, sectionList, editables);
+            result += generateTableBody(context, jsonData, headers, sections, editables, papers);
         else
             result += generateDummyBody(context, headers, isEditable);
     }
@@ -34,15 +34,15 @@ function generateTable(context, jsonData, jsonSchema, sectionList, isEditable){
     return result + "</table>";
 }
 
-function generateTableBody(context, jsonData, keys, sectionList, editables){
+function generateTableBody(context, jsonData, keys, sections, editables, papers){
     var result = "";
     for(var t=0; t < jsonData.length; t++) {
-        result += generateRow(context, jsonData[t], keys, sectionList, editables);
+        result += generateRow(context, jsonData[t], keys, sections, editables, papers);
     }
     return result;
 }
 
-function generateRow(context, jsonDatum, keys, sectionList, editables){
+function generateRow(context, jsonDatum, keys, sections, editables, papers){
     if(isNotRelated(context, jsonDatum))
         return "";
     var result = "<tr class=\"entry\">";
@@ -56,49 +56,54 @@ function generateRow(context, jsonDatum, keys, sectionList, editables){
     if ( (context === 'carve' || context === 'plant') && jsonDatum['order'] < 0)
         isUnordered = true;
 
+    var id = jsonDatum['id'];
+
     for (var k = 0; k < keys.length; k++) {
-        result += generateCell(context, jsonDatum, keys[k], sectionList, editables, isUnordered);
+        var key = keys[k];
+        var editable = ((context ==='mine' || context ==='carve') && key === 'id') ? false : editables.includes(key);
+
+        if (key === 'delete'){
+            result += generateDeleteButton(context, id);
+            continue;
+        }
+
+        if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
+            continue;
+
+        else if (key ==='sectionID')
+            result += generateForm(id, jsonDatum[key], key, editable, isUnordered, generateSectionIDSelection(context, id, sections, jsonDatum[key], editable));
+        else if (key ==='paperID')
+            result += generateForm(id, jsonDatum[key], key, editable, isUnordered, generatePaperIDSelection(context, id, papers, jsonDatum[key], editable));
+        else
+            result += generateForm(id, jsonDatum[key], key, editable, isUnordered);
     }
     return result + "</tr>";
 }
 
-function generateCell(context, jsonDatum, key, sectionList, editables, isUnordered) {
-    var id = jsonDatum['id'];
-    if(key === 'delete')
-        return generateDeleteButton(context, id);
-    if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
-        return "";
-    var editable = ((context ==='mine' || context ==='carve') && key === 'id') ? false : editables.includes(key);
-
-    var selectString = getSelectOfSectionList(context, id, sectionList, jsonDatum['sectionID'], editable);
-
-    return generateForm(id, jsonDatum[key], key, selectString, editable, isUnordered);
-}
-
-function generateForm(id, obj, key, selectString, editable = true, isUnordered = false){
+function generateForm(id, obj, key, editable = true, isUnordered = false, givenForm){
     var cellID = generateCellID(id, key);
     var rowContent = generateContent(obj, key);
     if(obj === undefined && key){ // for new entry
         // should be merted to below //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if(key === 'importance' || key === 'order'){
-            return "<td><input type=\"number\" id=\"" + cellID + "\" class = '"+id+"'>" + rowContent + "</input></td>";
+            return "<td><input type=\"number\" id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</input></td>";
         }
         else if(key === 'toPlant')
-            return "<td><input type=\"checkbox\" id=\"" + cellID + "\" class = '"+id+"'>" + rowContent + "</input></td>";
+            return "<td><input type=\"checkbox\" id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</input></td>";
         else if(key === 'pdf')
-            return "<td>" + createPDFUploadPopup(cellID) + "</td>";
+            return "<td>" + createPDFUploadPopup(key, cellID) + "</td>";
         else if(key==="sectionID"){
-            return "<td><textarea id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"' hidden></textarea>"+selectString+"</td>";
+            return "<td><textarea id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"' data-attribute-type = '"+key+"' hidden></textarea>"+givenForm+"</td>";
         }
         // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         else
-            return "<td><textarea id=\"" + cellID + "\" class = '"+id+"'>" + rowContent + "</textarea></td>";
+            return "<td><textarea id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</textarea></td>";
     }
     else if(typeof obj === "boolean"){
         if(editable)
             return "<td><input type='checkbox' id=\"" + cellID + "\" " + rowContent + " class = \""+id+"\" data-attribute-type = '"+key+"'></input></td>";
         else
-            return "<td><div id=\"" + cellID + "\">"+rowContent+"</div></td>";
+            return "<td><div id=\"" + cellID + "\" data-attribute-type = '"+key+"'>"+rowContent+"</div></td>";
     }
     else if(key==="id"){
         var unorderedWarning = isUnordered ? "<b>[Need to be organized]</b><br>" : "";
@@ -109,7 +114,7 @@ function generateForm(id, obj, key, selectString, editable = true, isUnordered =
             return "<td>"+unorderedWarning + rowContent + "</td>";
     }
     else if(key ==='paperID'){
-        return "<td>"+collectPaperIDs(id, key, rowContent)+"</td>";
+        return "<td>"+generateDiv(cellID, id, key, generatePaperLinks(rowContent)) + givenForm+"</td>";
     }
     else if(key==="bibtex"){
         if(editable)
@@ -119,9 +124,9 @@ function generateForm(id, obj, key, selectString, editable = true, isUnordered =
     }
     else if(key==="pdf"){
         if(editable)
-            return "<td><div contenteditable=\"true\"  id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br><a href='../"+rowContent+"'>Open</a></td>";
+            return "<td><div contenteditable=\"true\"  id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</div><br>"+getPDFLink(rowContent)+"</td>";
         else
-            return "<td><a href='../"+rowContent+"'>Open</a></td>";
+            return "<td>"+getPDFLink(rowContent)+"</td>";
     }
     else if(key==="order"){
         return "<td class='unselectable'><div id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>"+rowContent+"</div></td>";
@@ -130,13 +135,13 @@ function generateForm(id, obj, key, selectString, editable = true, isUnordered =
         return "<td>"+getComment(rowContent, cellID, id, key, editable)+"</td>";
     }
     else if(key==="sectionID"){
-        return "<td><div id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"' hidden>"+getValueForHiddenSectionID(rowContent)+"</div>"+selectString+"</td>";
+        return "<td>"+generateDiv(cellID, id, key, rowContent, true) + givenForm+"</td>";
     }
     else{
         if(editable)
             return "<td><div id=\"" + cellID + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</></td>";
         else
-            return "<td><div id=\"" + cellID + "\">"+rowContent+"</div></td>";
+            return "<td><div id=\"" + cellID + "\" data-attribute-type = '"+key+"'>"+rowContent+"</div></td>";
     }
 }
 
@@ -202,26 +207,84 @@ function generateContent(obj, key){
         return "";
 }
 
-function selectAndAddNewData(context, id, value){
-    storeItToHiddenSectionID(id, value);
+function selectAndAddNewData(context, id, value, type){ // type can be either sectionID or paperID
+    if(type === 'sectionID')
+        applyToHiddenSectionID(id, value);
+    else if(type === 'paperID')
+        applyToHiddenPaperID(id, value);
+        /////////// also need to update the paperID selection as well....
     if(id!=='new') // when it comes to column update
         makeUpdate(context, id);
 }
 
-function storeItToHiddenSectionID(id, value){
+function applyToHiddenSectionID(id, value){
     document.getElementById(id + '_sectionID').innerHTML = value;
 }
 
-function getValueForHiddenSectionID(text){
+function applyToHiddenPaperID(id, value){
+    var hiddenPaperIDValue = document.getElementById(id + '_paperID').innerHTML;
+    if(hiddenPaperIDValue !== undefined && !hiddenPaperIDValue.includes(value))
+        document.getElementById(id + '_paperID').innerHTML += (hiddenPaperIDValue.length>0 ? "," : "") + getSinglePaperLink(value);
+}
+
+function getPDFLink(rowContent){
+    if(rowContent && rowContent.length > 0)
+        return "<a href='../"+rowContent+"' target='_blank'>Open</a>";
+    else
+        return "";
+}
+
+function getSafeValue(text){
     if(text && text.length>0 && text !== 'unassigned')
         return text;
     else
         return "";
 }
 
-function getSelectOfSectionList(context, id, sectionList, value, isEditable){
+function getSinglePaperLink(paperID){
+    return "<a href='table.html?context=mine&paperID="+paperID+"'>"+ paperID + "</a>";
+}
+
+function generatePaperLinks(paperIdArray){
+    var result = "";
+    for(var i=0; i<paperIdArray.length; i++){
+        result += getSinglePaperLink(paperIdArray[i]);
+        if(i < paperIdArray.length-1)
+            result += ",";
+    }
+    return result;
+}
+
+function generatePaperIDSelection(context, id, papers, paperIdArray, isEditable){
+    if(!isEditable)
+        return "";
+    var result = "<select id=\""+id+"_paper_select\" onchange='selectAndAddNewData(\""+context+"\",\""+id+"\",this.value,\"paperID\")' multiple>";
+    console.log(papers);
+    console.log(paperIdArray);
+    for(var i=0; i< papers.length ; i++){
+        var inValueArray = false;
+        for(var t=0; t<paperIdArray.length ; t++){
+            if(paperIdArray[t] === papers[i].id)
+                inValueArray = true;
+        }
+        if(inValueArray === true)
+            result+= "<option selected=\"selected\" value=\""+papers[i].id+"\">"+papers[i].title+"</option>";
+        else
+            result+= "<option value=\""+papers[i].id+"\">"+papers[i].title+"</option>";
+    }
+    return result + "</select>";
+}
+
+function generateDiv(cellID, id, key, rowContent, isHidden = false){
+    if(isHidden === true)
+        return "<div id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"' hidden>"+getSafeValue(rowContent)+"</div>";
+    else
+        return "<div id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>"+getSafeValue(rowContent)+"</div>";
+}
+
+function generateSectionIDSelection(context, id, sectionList, value, isEditable){
     if(isEditable){
-        var result = "<select id=\""+id+"_select\" onchange='selectAndAddNewData(\""+context+"\",\""+id+"\",this.value)'>";
+        var result = "<select id=\""+id+"_section_select\" onchange='selectAndAddNewData(\""+context+"\",\""+id+"\",this.value,\"sectionID\")'>";
         result += "<option selected disabled>unassigned</option>";
         for(var i=0; i< sectionList.length ; i++){
             if(value && value === sectionList[i].id)
@@ -248,20 +311,6 @@ function getComment(obj, itemId, id, key, isEditable){
         return "<div id=\"" + itemId + "\" contenteditable=\"true\" class = '"+id+"' data-attribute-type = '"+key+"'>" + obj["content"] + "</div><div class='commenter'> by "+obj["commenter"]+"</div>" +getReactions(id, itemId, obj["reactions"]);
     else
         return "<div id=\"" + itemId + "\">"+obj["content"]+"</div>";
-}
-
-function collectPaperIDs(id, key, paperIdArray){
-    var result = "";
-    if(paperIdArray === undefined)
-        return result;
-
-    for(var i=0; i<paperIdArray.length; i++){
-
-        result += "<a href='table.html?context=mine&paperID="+paperIdArray[i]+"' class = '"+id+"' data-attribute-type = '"+key+"'>"+ paperIdArray[i] + "</a>";
-        if(i < paperIdArray.length-1)
-            result += ", ";
-    }
-    return result;
 }
 
 function contextToData(context){

@@ -345,7 +345,7 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": []
+            "default": ["carve"]
           }
         }
       }
