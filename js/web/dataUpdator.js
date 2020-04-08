@@ -2,12 +2,16 @@ function makeUpdateByElement(domElement){
     var context = getURLParameter("context");
     if(domElement.classList && domElement.classList[0]){
         var data_id = domElement.classList[0];
-        makeUpdate(context, data_id);
+        if(data_id.includes('section'))
+            makeUpdate('section', data_id, false);
+        else
+            makeUpdate(context, data_id);
     }
 }
 
-function makeUpdate(context, data_id){
+function makeUpdate(context, data_id, doRefresh = true){
     var data_row_elements = document.getElementsByClassName(data_id);
+
     var jsonDatum = convertToJson(context, data_id, data_row_elements);
 
     // for bibtex collecting
@@ -15,7 +19,7 @@ function makeUpdate(context, data_id){
         updateCompletePaperIDs(jsonDatum, jsonDatum['written']);
 
     if(jsonDatum)
-        registerValidDatum(context, jsonDatum, "update");
+        registerValidDatum(context, jsonDatum, "update", doRefresh);
 }
 
 function makeUpdateForReaction(thoughtId, commentId, itemToAdd){
@@ -64,9 +68,10 @@ function collectReactions(commentId){
     return [];
 }
 
-function getDefaultJsonByType(dataType, id){
+function getDefaultJsonByType(context, id){
+    // it needs to get 'editables'.....
     var newJsonDatum = {};
-    if(dataType==='thought'){
+    if(context === 'carve'){
         newJsonDatum['id'] = id;
         newJsonDatum['order'] = -1;
         newJsonDatum['written'] = false;
@@ -74,17 +79,29 @@ function getDefaultJsonByType(dataType, id){
         newJsonDatum['importance'] = 0;
         newJsonDatum['paperID'] = [];
     }
-    else if(dataType === 'paper'){
+    else if(context === 'plant'){
+        newJsonDatum['id'] = id;
+        newJsonDatum['sectionID'] = "";
+        newJsonDatum['comment'] = {};
+        newJsonDatum['written'] = false;
+    }
+    else if(context === 'collect'){
         newJsonDatum['id'] = id;
         newJsonDatum['importance'] = 0;
         newJsonDatum['contributor'] = getContributorFromLS();
         newJsonDatum['timestamp'] = ""; // dummy timestamp
     }
+    else if(context === 'section'){
+        newJsonDatum['id'] = id;
+        newJsonDatum['name'] = "";
+        newJsonDatum["sectionIDofParent"] = "";
+        newJsonDatum['order'] = -1;
+    }
     return newJsonDatum;
 }
 
 function convertToJson(context, id, elements){
-    var jsonDatum = getDefaultJsonByType(contextToDefinition(context), id);
+    var jsonDatum = getDefaultJsonByType(context, id);
     for(var i=0; i<elements.length ; i++){
         var attributeName = elements[i].dataset.attributeType;
         var value = (elements[i].type === 'checkbox') ? elements[i].checked : elements[i].innerHTML;
@@ -96,6 +113,7 @@ function convertToJson(context, id, elements){
             value = elements[i].textContent;
 
         // should be generalized //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // it needs to get 'editables'.....
         if(attributeName === 'comment')
             jsonDatum[attributeName] = {"content":value, "commenter":getContributorFromLS(), "timestamp":"", "reactions":collectReactions(elements[i].id)};
         else if(attributeName === 'importance')
@@ -114,8 +132,10 @@ function convertToJson(context, id, elements){
         else
             jsonDatum[attributeName] = value;
     }
+
     if(context === 'mine')
         addToPaperIdList(jsonDatum['paperID'], getURLParameter("paperID"));
+    console.log(jsonDatum);
     return jsonDatum;
 }
 
@@ -167,4 +187,27 @@ function updateOrderAttribute(table){
         }
     }
     return needToUpdate;
+}
+
+function sendJsonDatum(context, data, command, doRefresh){
+    // construct an HTTP request
+    var xhr = new XMLHttpRequest();
+    var id_str = command === 'update' ? "?id="+data.id : "";
+    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/"+command+"/"+contextToDefinition(context) + id_str;
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    // send the collected data as JSON
+    xhr.send(JSON.stringify(data));
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            //console.log(xhr.responseText);
+
+            if(doRefresh)
+                location.reload();
+
+            ////////////////// TO DO: refresh /////////////////////
+            //$("#dataTable").load(window.location.href+"#dataTable" );
+        }
+    };
 }

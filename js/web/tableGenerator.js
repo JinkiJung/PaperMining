@@ -50,7 +50,9 @@ $(document).ready(function() {
                         //////////////////////////////////////////////////////////////////////////////////////////
                         sortTable(1); // order
                         //////////////////////////////////////////////////////////////////////////////////////////
-                        enableDragAndDrop();
+
+                        enableDragAndDrop("sortableTable", getURLParameter("context"));
+                        //enableDragAndDrop("sectionTable", "section");
                     }
                 }
             });
@@ -78,15 +80,14 @@ function getJsonDatum(id, order){
     return {"id": id, "order": order};
 }
 
-function enableDragAndDrop(){
-    $("#sortableTable").tableDnD({
+function enableDragAndDrop(id, context){
+    $("#"+ id).tableDnD({
         onDragClass: "myDragClass"
     });
-    $("#sortableTable").bind("DOMSubtreeModified", function() {
+    $("#"+ id).bind("DOMSubtreeModified", function() {
 
     });
-    $("#sortableTable").mouseup(function(){
-        var context = getURLParameter("context");
+    $("#"+ id).mouseup(function(){
         var needToUpdate = updateOrderAttribute($(this)[0]);
         for(var i=0; i<needToUpdate.length ; i++){
             registerValidDatum(context, needToUpdate[i], "update");

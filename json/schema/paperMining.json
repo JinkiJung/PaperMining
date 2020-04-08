@@ -56,20 +56,68 @@
               "type": "string",
               "enum": ["collect", "mine", "carve", "plant"]
             },
-            "default": ["mine","carve"]
+            "default": []
           }
         },
         "name": {
           "type": "string",
-          "description" : "Section name"
+          "description" : "Section name",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          }
         },
-        "number": {
+        "sectionIDofParent": {
           "type": "string",
-          "description" : "Section (hierarchical) number"
+          "description" : "Parent Section ID (hierarchical)",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          }
         },
         "order": {
           "type": "integer",
-          "description" : "Order of the section"
+          "description" : "Order of the section",
+          "_visible": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          },
+          "_editable": {
+            "type": "array",
+            "items":{
+              "type": "string",
+              "enum": ["collect", "mine", "carve", "plant"]
+            },
+            "default": ["mine","carve"]
+          }
         }
       }
     },

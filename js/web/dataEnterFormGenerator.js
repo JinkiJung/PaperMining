@@ -1,7 +1,7 @@
-function generateDataEnterForm(context, headers, sectionList){
+function generateDataEnterForm(context, headers, descriptions, sections){
     if(context === 'plant')
         return ;
-    document.getElementById("dataEnterForm").innerHTML = generateNewEntry(context, headers, sectionList);
+    document.getElementById("dataEnterForm").innerHTML = generateNewEntry(context, headers, descriptions, sections);
     var modal = document.getElementById('myModal');
     // Get the button that opens the modal
     var btn = document.getElementById("newEntryBtn");
@@ -34,9 +34,13 @@ function generateShortRand(){
     return Math.random().toString(36).substr(2, 7);
 }
 
+function getDataIDWithRand(dataType){
+    return dataType+ '_' + generateShortRand();
+}
+
 function initializeInputFields(context){
     // give random paperID
-    document.getElementById("new_id").value = contextToDefinition(context)+ '_' + generateShortRand();
+    document.getElementById("new_id").value = getDataIDWithRand(contextToDefinition(context));
 
     if(document.getElementById("new_importance"))
         document.getElementById("new_importance").value = 0;
@@ -52,7 +56,7 @@ function initializeInputFields(context){
         document.getElementById("new_order").value = -1;
 }
 
-function generateNewEntry(context, header, sectionList){
+function generateNewEntry(context, header, descriptions, sections){
     var buttonName = "Add " + contextToDefinition(context);
     if(context === 'carve')
         buttonName += " without reference";
@@ -60,7 +64,7 @@ function generateNewEntry(context, header, sectionList){
     result += "<div id=\"myModal\" class=\"modal\">";
     result += "<div class=\"modal-content\">";
     result += "<span class=\"close\">&times;</span>";
-    result += generateNewEntryCore(context, header, sectionList);
+    result += generateNewEntryCore(context, header, descriptions, sections);
     result += "</div></div>";
     return result;
 }
@@ -86,30 +90,26 @@ function createPDFUploadPopup(key, rowId){
     return "<a href=\"#\" onClick=\"passTitle(); return false;\">Upload</a><noscript>You need Javascript to use the previous link or use <a href=\"index.html\" target=\"_blank\">Upload</a></noscript><textarea readonly class='new' id=\"" + rowId + "\" data-attribute-type = '"+key+"'></textarea>";
 }
 
-function generateNewEntryCore(context, header, sections){
+function generateNewEntryCore(context, headers, descriptions, sections){
     var result = "<table>";
     //*
     var id = 'new';
-    var selectString = generateSectionIDSelection(context, id, sections, undefined, true);
+    var selectString = generateSectionIDSelection(context, id, sections, undefined, undefined, "sectionID",true);
 
-    for(var k=0; k<header.length; k++){
+    for(var k=0; k<headers.length; k++){
         result +="<tr>";
-        result += "<td class=table_title width=10><b>"+capitalizeFirstLetter(header[k])+"</b></td>";
-        result += generateForm(id,undefined, header[k],true, false, selectString);
+        result += generateTableHeaderCell(headers[k], descriptions[k], k);
+        result += generateForm(id,undefined, headers[k],true, false, selectString);
         result +="</tr>";
     }
-    var paperID = getURLParameter("paperID");
-    if(paperID)
-        result += "<tr><td colspan=2><button id=\"submit_\" onclick='addNewData(\""+String(context)+"\", \""+String(paperID)+"\")'>Submit</button> ";
-    else
-        result += "<tr><td colspan=2><button id=\"submit_\" onclick='addNewData(\""+String(context)+"\")'>Submit</button> ";
+    result += "<tr><td colspan=2><button id=\"submit_\" onclick='addNewData(\""+String(context)+"\")'>Submit</button> ";
     result += "<button onclick='clearInputField()'>Clear</button></td></tr>";
     result += "</table>";
     return result;
 }
 
-function addNewData(context, paperID){
-    var jsonDatum = collectDatum(context, paperID);
+function addNewData(context){
+    var jsonDatum = collectDatum(context);
     if(jsonDatum)
         registerValidDatum(context, jsonDatum, "store");
 }
@@ -122,7 +122,7 @@ function hasLocalUserName(){
         return false;
 }
 
-function collectDatum(context, paperID) {
+function collectDatum(context) {
     if(!hasLocalUserName())
     {
         alert("The contributor's name is empty. Move to Home page and enter your name.");
@@ -134,7 +134,7 @@ function collectDatum(context, paperID) {
     return convertToJson(context, 'new', fieldNames);
 }
 
-function validateDatum(context, schema, data, command = undefined) {
+function validateDatum(context, schema, data, command = undefined, doRefresh) {
     var ajv = new Ajv;
     var valid = ajv.validate(schema, data);
     if (!valid) {
@@ -142,30 +142,8 @@ function validateDatum(context, schema, data, command = undefined) {
         return false;
     }
     else if(command)
-        sendJsonDatum(context, data, command);
+        sendJsonDatum(context, data, command, doRefresh);
     return true;
-}
-
-function sendJsonDatum(context, data, command){
-    // construct an HTTP request
-    var xhr = new XMLHttpRequest();
-    var id_str = command === 'update' ? "?id="+data.id : "";
-    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/"+command+"/"+contextToDefinition(context) + id_str;
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    // send the collected data as JSON
-    xhr.send(JSON.stringify(data));
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            //console.log(xhr.responseText);
-
-            location.reload();
-
-            ////////////////// TO DO: refresh /////////////////////
-            //$("#dataTable").load(window.location.href+"#dataTable" );
-        }
-    };
 }
 
 function getAjvErrorMessages(errors){
@@ -178,14 +156,14 @@ function getAjvErrorMessages(errors){
     return message;
 }
 
-function registerValidDatum(context, jsonDatum, command = undefined){
+function registerValidDatum(context, jsonDatum, command = undefined, doRefresh = true){
     $.ajax({
         type: "GET",
         url: "../json/schema/paperMining.json",
         dataType: "text",
         success: function (data) {
             var schemaData = JSON.parse(data);
-            var result = validateDatum(context, schemaData["definitions"][contextToDefinition(context)], jsonDatum, command);
+            var result = validateDatum(context, schemaData["definitions"][contextToDefinition(context)], jsonDatum, command, doRefresh);
         },
         fail: function (data) {
             alert("Error in loading json schema.");

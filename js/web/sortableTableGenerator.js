@@ -7,19 +7,22 @@ function getTitle(jsonData, paperID){
 
 function generateTable(context, jsonData, jsonSchema, sections, isEditable, papers){
     var result = "";
-    var trStyle = "";
-    trStyle = "class=\"nodrop nodrag\"";
-    result += "<table id=\"sortableTable\"><tr "+trStyle+">";
+    result += "<table id=\"sortableTable\">";
     var headers = getVisiblesByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
     var descriptions = getDescriptionsByContext(context, jsonSchema[contextToDefinition(context)]["properties"], isEditable);
     var editables = getEditablesByContext(context, jsonSchema[contextToDefinition(context)]["properties"]);
 
     sortingState = Array(headers.length).fill(false);
     // header
-    result += generateTableHeader(headers, descriptions);
+    result += generateTableHeader(headers, descriptions, true);
     // new entry
-    if(isEditable === true)
-        generateDataEnterForm(context, editables, sections);
+    if(isEditable === true){
+        generateDataEnterForm(context, editables, descriptions, sections);
+        var sectionHeaders = getHeader(jsonSchema['section']["properties"]);
+        sectionHeaders.push('delete');
+        generateSectionManageForm(context, sectionHeaders, descriptions, sections);
+    }
+
     if(context === 'plant')
         generateBibtexCopyBtn();
 
@@ -63,15 +66,14 @@ function generateRow(context, jsonDatum, keys, sections, editables, papers){
         var editable = ((context ==='mine' || context ==='carve') && key === 'id') ? false : editables.includes(key);
 
         if (key === 'delete'){
-            result += generateDeleteButton(context, id);
-            continue;
+            result += generateDeleteButton(id);
         }
 
         if (jsonDatum === undefined || key === undefined || jsonDatum[key] === undefined)
             continue;
 
-        else if (key ==='sectionID')
-            result += generateForm(id, jsonDatum[key], key, editable, isUnordered, generateSectionIDSelection(context, id, sections, jsonDatum[key], editable));
+        else if (key.includes('sectionID'))
+            result += generateForm(id, jsonDatum[key], key, editable, isUnordered, generateSectionIDSelection(context, id, sections, jsonDatum[key], undefined, key, editable));
         else if (key ==='paperID')
             result += generateForm(id, jsonDatum[key], key, editable, isUnordered, generatePaperIDSelection(context, id, papers, jsonDatum[key], editable));
         else
@@ -83,8 +85,14 @@ function generateRow(context, jsonDatum, keys, sections, editables, papers){
 function generateForm(id, obj, key, editable = true, isUnordered = false, givenForm){
     var cellID = generateCellID(id, key);
     var rowContent = generateContent(obj, key);
+
+    if (key === 'delete'){
+        return generateDeleteButton(id);
+    }
+
     if(obj === undefined && key){ // for new entry
         // should be merted to below //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // it needs to get 'editables'.....
         if(key === 'importance' || key === 'order'){
             return "<td><input type=\"number\" id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</input></td>";
         }
@@ -92,7 +100,7 @@ function generateForm(id, obj, key, editable = true, isUnordered = false, givenF
             return "<td><input type=\"checkbox\" id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>" + rowContent + "</input></td>";
         else if(key === 'pdf')
             return "<td>" + createPDFUploadPopup(key, cellID) + "</td>";
-        else if(key==="sectionID"){
+        else if(key.includes("sectionID")){
             return "<td><textarea id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"' data-attribute-type = '"+key+"' hidden></textarea>"+givenForm+"</td>";
         }
         // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +142,7 @@ function generateForm(id, obj, key, editable = true, isUnordered = false, givenF
     else if(key==="comment"){
         return "<td>"+getComment(rowContent, cellID, id, key, editable)+"</td>";
     }
-    else if(key==="sectionID"){
+    else if(key.includes("sectionID")){
         return "<td>"+generateDiv(cellID, id, key, rowContent, true) + givenForm+"</td>";
     }
     else{
@@ -175,15 +183,19 @@ function getThoughtFromPaperID(jsonThoughtData, paperID){
     return items;
 }
 
-function generateTableHeader(headers, descriptions){
-    var result = "";
+function generateTableHeader(headers, descriptions, isSortable = false){
+    var result = "<tr class=\"nodrop nodrag\">";
     if(headers){
         for( var k=0; k<headers.length ; k++){
-            result+= "<td class='table_header'><button class=\"tip\" onclick=\"sortTable("+k+")\">"+ capitalizeFirstLetter(headers[k]) + "<span class=\"description\">"+descriptions[k]+"</span></button></td>";
+            result += generateTableHeaderCell(headers[k], descriptions[k], k, isSortable);
         }
     }
-    result += "</tr>";
-    return result;
+    return result += "</tr>";
+}
+
+function generateTableHeaderCell(name, description, index, isSortable){
+    var sortableString = isSortable === true ? "onclick=\"sortTable("+index+")\"" : "";
+    return "<td class='table_header'><button class=\"tip\" "+sortableString+">"+ capitalizeFirstLetter(name) + "<span class=\"description\">"+description+"</span></button></td>";
 }
 
 function generateContent(obj, key){
@@ -208,8 +220,8 @@ function generateContent(obj, key){
 }
 
 function updateFromSelect(context, id, value, type){ // type can be either sectionID or paperID
-    if(type === 'sectionID')
-        applyToHiddenSectionID(id, value);
+    if(type.includes('sectionID'))
+        applyToElement(id, type, value);
     else if(type === 'paperID')
         applyToHiddenPaperID(id);
         /////////// also need to update the paperID selection as well....
@@ -217,8 +229,8 @@ function updateFromSelect(context, id, value, type){ // type can be either secti
         makeUpdate(context, id);
 }
 
-function applyToHiddenSectionID(id, value){
-    document.getElementById(id + '_sectionID').innerHTML = value;
+function applyToElement(id, type, value){
+    document.getElementById(id + '_' + type).innerHTML = value;
 }
 
 function getSelectedPaperIDFromSelect(id){
@@ -307,23 +319,25 @@ function generateDiv(cellID, id, key, rowContent, isHidden = false){
         return "<div id=\"" + cellID + "\" class = '"+id+"' data-attribute-type = '"+key+"'>"+getSafeValue(rowContent)+"</div>";
 }
 
-function generateSectionIDSelection(context, id, sectionList, value, isEditable){
+function generateSectionIDSelection(context, id, sections, value, valueForDisabled, type, isEditable){
     if(isEditable){
-        var result = "<select class='slimSelectPM' id=\""+id+"_section_select\" onchange='updateFromSelect(\""+context+"\",\""+id+"\",this.value,\"sectionID\")'>";
+        var result = "<select class='slimSelectPM' id=\""+id+"_section_select\" onchange='updateFromSelect(\""+context+"\",\""+id+"\",this.value,\""+type+"\")'>";
         result += "<option selected disabled>unassigned</option>";
-        for(var i=0; i< sectionList.length ; i++){
-            if(value && value === sectionList[i].id)
-                result+= "<option selected=\"selected\" value=\""+sectionList[i].id+"\">"+sectionList[i].name+"</option>";
+        for(var i=0; i< sections.length ; i++){
+            if(value && value === sections[i].id)
+                result+= "<option selected=\"selected\" value=\""+sections[i].id+"\">"+sections[i].name+"</option>";
+            else if(valueForDisabled && valueForDisabled === sections[i].id)
+                result+= "<option disabled=\"disabled\" value=\""+sections[i].id+"\">"+sections[i].name+"</option>";
             else
-                result+= "<option value=\""+sectionList[i].id+"\">"+sectionList[i].name+"</option>";
+                result+= "<option value=\""+sections[i].id+"\">"+sections[i].name+"</option>";
         }
         return result + "</select>";
     }
     else{
         if(value){
-            for(var i=0; i< sectionList.length ; i++){
-                if(value === sectionList[i].id){
-                    return sectionList[i].name;
+            for(var i=0; i< sections.length ; i++){
+                if(value === sections[i].id){
+                    return sections[i].name;
                 }
             }
         }
@@ -351,12 +365,15 @@ function contextToDefinition(context){
         return 'thought';
     else if(context === 'plant')
         return 'thought';
+    else if(context === 'section')
+        return 'section';
     else
         return "";
 }
 
-function generateDeleteButton(context, id){
-    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/remove/"+contextToDefinition(context)+"?id="+id;
+function generateDeleteButton(id){
+    var definition = id.split('_')[0];
+    var url = "http://"+defaultConfig.web.url+':'+defaultConfig.web.port+"/remove/"+definition+"?id="+id;
     return "<td><button onclick=\"callGetToRemove('"+url+"')\">Delete</button></td>";
 }
 

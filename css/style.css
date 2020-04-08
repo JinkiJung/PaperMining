@@ -27,6 +27,11 @@ table {
 
 table.table_header{
     vertical-align: middle;
+    min-width: 50px;
+}
+
+textarea{
+    width: 98%;
 }
 
 .unselectable{
@@ -34,6 +39,7 @@ table.table_header{
 }
 
 td {
+    width: min-content;
     border: 0.5px #aaa solid;
     padding: 5px;
 }
