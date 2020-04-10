@@ -476,9 +476,9 @@ function getDescriptionsByContext(context, jsonData, isEditable){
 }
 
 
-function sortTable(numElement) {
+function sortTable(id, numElement) {
     var table, rows, switching, i, x, y, shouldSwitch;
-    table = document.getElementById("sortableTable");
+    table = document.getElementById(id);
     switching = true;
     /*Make a loop that will continue until
     no switching has been done:*/
@@ -490,7 +490,7 @@ function sortTable(numElement) {
         first, which contains table headers):*/
         rows = table.rows;
         for (i = 0; i < (rows.length - 1); i+=1) {
-            if(hasClass(rows[i],'entry') === false)
+            if(hasClass(rows[i],'entry') === false || hasClass(rows[i+1],'entry') === false )
                 continue;
             //start by saying there should be no switching:
             shouldSwitch = false;

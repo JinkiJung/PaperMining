@@ -110,8 +110,7 @@ function validateAndUpdate(dataType, req, res){
     res.setHeader('Access-Control-Allow-Origin', 'http://'+defaultConfig.web.url+':'+defaultConfig.web.port);
     if(req.body) {
         try {
-            // append timestamp from server
-            //serverTime.getCurrentTime();
+            var jsonDatum = req.body;
 
             // read schema file
             fs.readFile('./json/schema/paperMining.json', function read(err, data) {
@@ -119,19 +118,20 @@ function validateAndUpdate(dataType, req, res){
                     throw err;
                 }
                 var jsonSchema = JSON.parse(data);
-                var fileName = req.body.id;
-                var problem = validator.findProblem(dataType,jsonSchema["definitions"][dataType], req.body);
+                var fileName = jsonDatum.id;
+                var problem = validator.findProblem(dataType,jsonSchema["definitions"][dataType], jsonDatum);
+
                 if(problem)
                     res.status(500).send(problem.message);
                 else{
                     // check the coincidence of param 'id' and data 'id
-                    if(req.body.id !== req.query['id']){
+                    if(jsonDatum.id !== req.query['id']){
                         res.status(500).send("the parameter 'id' does not match with data attribute 'id'.");
                         return ;
                     }
                     try{
-                        fileManager.update(fileName, "json", dataType+"s", JSON.stringify(req.body),res);
-                        dbManager.updateDatumToDB(dataType, req.body);
+                        fileManager.update(fileName, "json", dataType+"s", JSON.stringify(jsonDatum),res);
+                        dbManager.updateDatumToDB(dataType, jsonDatum);
                     }
                     catch(e) {
                         res.status(500).send(e.message); // error in the above string (in this case, yes)!
@@ -156,8 +156,7 @@ function validateAndStore(dataType, req, res){
     res.setHeader('Access-Control-Allow-Origin', 'http://'+defaultConfig.web.url+':'+defaultConfig.web.port);
     if(req.body) {
         try {
-            // append timestamp from server
-            //serverTime.getCurrentTime();
+            var jsonDatum = req.body;
 
             // read schema file
             fs.readFile('./json/schema/paperMining.json', function read(err, data) {
@@ -165,13 +164,14 @@ function validateAndStore(dataType, req, res){
                     throw err;
                 }
                 var jsonSchema = JSON.parse(data);
-                var fileName = req.body.id;
-                var problem = validator.findProblem(dataType,jsonSchema["definitions"][dataType], req.body);
+                var fileName = jsonDatum.id;
+                console.log(fileName);
+                var problem = validator.findProblem(dataType,jsonSchema["definitions"][dataType], jsonDatum);
                 if(problem)
                     res.status(500).send(problem);
                 else{
-                    fileManager.write(fileName, "json", dataType+"s", JSON.stringify(req.body),res);
-                    dbManager.appendDatumToDB(dataType, req.body);
+                    fileManager.write(fileName, "json", dataType+"s", JSON.stringify(jsonDatum),res);
+                    dbManager.appendDatumToDB(dataType, jsonDatum);
                     //res.end("OK");
                 }
             });

@@ -43,16 +43,22 @@ $(document).ready(function() {
                     }
                     if(context === 'plant') {
                         //////////////////////////////////////////////////////////////////////////////////////////
-                        sortTable(0); // order
+                        sortTable("sortableTable",0); // order
                         //////////////////////////////////////////////////////////////////////////////////////////
                     }
                     else if(context === 'carve'){
                         //////////////////////////////////////////////////////////////////////////////////////////
-                        sortTable(1); // order
+                        sortTable("sortableTable",1); // order
+                        sortTable("sectionTable",3); // order
                         //////////////////////////////////////////////////////////////////////////////////////////
 
                         enableDragAndDrop("sortableTable", getURLParameter("context"));
-                        //enableDragAndDrop("sectionTable", "section");
+                        enableDragAndDrop("sectionTable", "section");
+                    }
+                    else if(context === 'mine'){
+                        //////////////////////////////////////////////////////////////////////////////////////////
+                        sortTable("sectionTable",3); // order
+                        //////////////////////////////////////////////////////////////////////////////////////////
                     }
                 }
             });
@@ -88,9 +94,9 @@ function enableDragAndDrop(id, context){
 
     });
     $("#"+ id).mouseup(function(){
-        var needToUpdate = updateOrderAttribute($(this)[0]);
-        for(var i=0; i<needToUpdate.length ; i++){
-            registerValidDatum(context, needToUpdate[i], "update");
+        var idForUpdate = updateOrderAttribute($(this)[0]);
+        for(var i=0; i<idForUpdate.length ; i++){
+            makeUpdate(context, idForUpdate[i], false);
         }
     });
 }

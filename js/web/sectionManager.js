@@ -58,7 +58,7 @@ function addNewSectionRow(headerString){
     // add dummy section data
     var jsonDatum = getDefaultJsonByType("section", newSectionID);
     jsonDatum['order'] = document.getElementById("sectionTable").rows.length-1;
-    registerValidDatum("section", jsonDatum, "store", false);
+    updateWithCompleteJsonDatum("section", jsonDatum, "store", false);
 
     createNewSectionRow(newSectionID, headers);
 }
@@ -106,7 +106,7 @@ function generateSectionTable(headers, descriptions, sections){
 
     result += generateTableHeader(headers, descriptions);
     for(var t=0; t<sections.length ; t++){
-        result += "<tr>";
+        result += "<tr class=\"entry\">";
         var id = sections[t].id;
 
         var selectString = generateSectionIDSelection("section", id, sections, sections[t]["sectionIDofParent"], id,"sectionIDofParent",true);

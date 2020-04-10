@@ -19,7 +19,7 @@ function makeUpdate(context, data_id, doRefresh = true){
         updateCompletePaperIDs(jsonDatum, jsonDatum['written']);
 
     if(jsonDatum)
-        registerValidDatum(context, jsonDatum, "update", doRefresh);
+        updateWithCompleteJsonDatum(context, jsonDatum, "update", doRefresh);
 }
 
 function makeUpdateForReaction(thoughtId, commentId, itemToAdd){
@@ -36,7 +36,7 @@ function makeUpdateForReaction(thoughtId, commentId, itemToAdd){
         jsonDatum["comment"]["reactions"].push(itemToAdd);
     }
     if(jsonDatum)
-        registerValidDatum(context, jsonDatum, "update");
+        updateWithCompleteJsonDatum(context, jsonDatum, "update");
 }
 
 function sendMetadataUpdate(type, content){
@@ -135,7 +135,7 @@ function convertToJson(context, id, elements){
 
     if(context === 'mine')
         addToPaperIdList(jsonDatum['paperID'], getURLParameter("paperID"));
-    console.log(jsonDatum);
+
     return jsonDatum;
 }
 
@@ -155,6 +155,8 @@ function updateOrderAttribute(table){
 
     for(var i =1 ; i< table.rows.length ; i++){
         var row = table.rows[i];
+        if(hasClass(row,'entry') === false)
+            continue;
         var orderValue = -1;
         var id;
         for(var t=0; t<row.childNodes.length ; t++){
@@ -172,7 +174,7 @@ function updateOrderAttribute(table){
             else{  // needs an update
                 divElement.innerHTML = lastMax;
                 if(id)
-                    needToUpdate.push(getJsonDatum(id, lastMax));
+                    needToUpdate.push(id);
                 lastMax +=1;
             }
         }
@@ -182,7 +184,7 @@ function updateOrderAttribute(table){
         else{
             divElement.innerHTML = lastMax;
             if(id)
-                needToUpdate.push(getJsonDatum(id, lastMax));
+                needToUpdate.push(id);
             lastMax +=1;
         }
     }

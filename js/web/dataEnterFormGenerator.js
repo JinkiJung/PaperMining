@@ -111,7 +111,7 @@ function generateNewEntryCore(context, headers, descriptions, sections){
 function addNewData(context){
     var jsonDatum = collectDatum(context);
     if(jsonDatum)
-        registerValidDatum(context, jsonDatum, "store");
+        updateWithCompleteJsonDatum(context, jsonDatum, "store");
 }
 
 function hasLocalUserName(){
@@ -156,7 +156,7 @@ function getAjvErrorMessages(errors){
     return message;
 }
 
-function registerValidDatum(context, jsonDatum, command = undefined, doRefresh = true){
+function updateWithCompleteJsonDatum(context, jsonDatum, command = undefined, doRefresh = true){
     $.ajax({
         type: "GET",
         url: "../json/schema/paperMining.json",
