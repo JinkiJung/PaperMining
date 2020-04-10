@@ -9,7 +9,8 @@ PaperMining provides four separate modes to support sharing thoughts:
 - **Carve**: organize and revise all thoughts
 - **Plant**: plant your thoughts to your article or academic journal
 
-The project is previously implemented as a prototype, [SharePaper](https://github.com/VirtualityForSafety/SharePaper), and then has been elaborated by [Jinki Jung](https://github.com/jinkijung).
+The maintainer's short motivation on this:
+> You might have been thought the Git is the most powerful tool to share works on source codes as well as other generic stuff. PaperMining is a branch of this idea. I believe the Git repository can be used in paper writing by sharing enlightening thoughts caught from multiple related papers and by multiple readers. That is the tool, PaperMining. - [Jinki Jung](https://github.com/jinkijung)
 
 ## Features
 - organized thoughts (or comments) visualization that are captured from multiple papers - *Carve mode*
@@ -75,4 +76,4 @@ PaperMining asserts no claims of ownership to individual items of resources, met
  - mail to your.jinki.jung@gmail.com
 
 ## Special thanks to
- - Thanks to [Soyeon Kim](https://github.com/soykim314), [Sua Lee](https://github.com/otterlee), and [Sangho Lee](https://github.com/kimmydkemf) who implemented the prototype (SharePaper). Also give thanks to [Hyeopwoo Lee](https://www.researchgate.net/profile/Hyeopwoo_Lee), [Kangsoo Kim](http://www.kangsookim.com/) and Hyunwoo Cho who give us a practical advise for efficient paper sharing.
+ - Thanks to [Soyeon Kim](https://github.com/soykim314), [Sua Lee](https://github.com/otterlee), and [Sangho Lee](https://github.com/kimmydkemf) who participated in the implemention prototype, [SharePaper](https://github.com/VirtualityForSafety/SharePaper). Also give thanks to [Hyeopwoo Lee](https://www.researchgate.net/profile/Hyeopwoo_Lee), [Kangsoo Kim](http://www.kangsookim.com/) and Hyunwoo Cho who give us a practical advise for efficient paper sharing.
