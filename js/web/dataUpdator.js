@@ -71,8 +71,8 @@ function collectReactions(commentId){
 function getDefaultJsonByType(context, id){
     // it needs to get 'editables'.....
     var newJsonDatum = {};
-    if(context === 'carve'){
-        newJsonDatum['id'] = id;
+    newJsonDatum['id'] = id;
+    if(context === 'carve' || context === 'mine'){
         newJsonDatum['order'] = -1;
         newJsonDatum['written'] = false;
         newJsonDatum['toPlant'] = false;
@@ -80,19 +80,16 @@ function getDefaultJsonByType(context, id){
         newJsonDatum['paperID'] = [];
     }
     else if(context === 'plant'){
-        newJsonDatum['id'] = id;
         newJsonDatum['sectionID'] = "";
         newJsonDatum['comment'] = {};
         newJsonDatum['written'] = false;
     }
     else if(context === 'collect'){
-        newJsonDatum['id'] = id;
         newJsonDatum['importance'] = 0;
         newJsonDatum['contributor'] = getContributorFromLS();
         newJsonDatum['timestamp'] = ""; // dummy timestamp
     }
     else if(context === 'section'){
-        newJsonDatum['id'] = id;
         newJsonDatum['name'] = "";
         newJsonDatum["sectionIDofParent"] = "";
         newJsonDatum['order'] = -1;

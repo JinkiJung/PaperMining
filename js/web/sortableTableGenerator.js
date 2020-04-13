@@ -174,9 +174,11 @@ function getThoughtFromPaperID(jsonThoughtData, paperID){
     var items = [];
     if(jsonThoughtData){
         for(var i=0; i<jsonThoughtData.length ; i++){
-            for(var t=0; t<jsonThoughtData[i]["paperID"].length ; t++){
-                if(jsonThoughtData[i]["paperID"][t] === paperID)
-                    items.push(jsonThoughtData[i]);
+            if(Array.isArray(jsonThoughtData[i]["paperID"])){
+                for(var t=0; t<jsonThoughtData[i]["paperID"].length ; t++){
+                    if(jsonThoughtData[i]["paperID"][t] === paperID)
+                        items.push(jsonThoughtData[i]);
+                }
             }
         }
     }
