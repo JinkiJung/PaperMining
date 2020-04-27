@@ -1,6 +1,6 @@
 function getTitle(jsonData, paperID){
     if(paperID !== 'null')
-        return "[Mining by "+getContributorFromLS()+"]<br>"+getTitleFromPaperID(jsonData["papers"], paperID);
+        return "[Mine of "+getContributorFromLS()+"]<br>"+getTitleFromPaperID(jsonData["papers"], paperID);
     else
         return jsonData["title"]
 }

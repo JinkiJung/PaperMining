@@ -186,6 +186,8 @@ function clearInputField(){
             fieldNames[i].value = "";
         }
     }
+    var context = getURLParameter("context");
+    initializeInputFields(context);
 }
 
 function checkBibTexEntry(entered){
@@ -201,6 +203,10 @@ function checkEntry(entered){
     else{
         document.getElementById(entered+"_img").src = "../asset/undefined.png";
     }
+}
+
+function setPDFFilePath(filePath){
+    document.getElementById("new_pdf").value = filePath;
 }
 
 function getTitleFromTextArea(){
